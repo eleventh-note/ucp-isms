@@ -1,0 +1,26 @@
+#header{ margin-bottom: 50px;}
+#dashboard .inner{
+	display: block;
+	height: 24px;
+	padding: 7px 0px 5px 30px;
+	background-image: url("../images/dashboard.png");
+	background-color: #000;
+	position:relative;
+}
+
+#dashboard .options{position: absolute;right: 35px;top: 9px; width: 200px; text-align: right;}
+#dashboard .options a{ color: #ffc000; text-decoration: none}
+#dashboard .options a:hover{ text-decoration: underline; }
+#dashboard .options a:visited{ color: #ffc000;}
+#dashboard .options ul li{ display: inline; margin-right: 10px; color: #fff;}
+
+#dashboard .greetings{
+	margin-top: 0px;
+	color: #fff;
+}
+#dashboard .inner .greetings .highlight{
+	color: #ffc000;
+}
+#dashboard .inner .greetings a{color: #ffc000;text-decoration: none;}
+#dashboard .inner .greetings a:hover{text-decoration: underline;}
+#dashboard .inner .greetings a:visited{color: #ffc000;}

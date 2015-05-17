@@ -1,0 +1,86 @@
+html{
+	font: 67.5% Arial, Tahoma, Verdana, "Times New Roman";
+}
+
+body{
+	font-size: 100%;
+	background-color: #f0efef;
+	background-color: #ccc;
+	background-image: url(../images/logo.png);
+	padding-bottom: 20px;
+}
+
+#header{
+	height: 90px;
+	background-color: #000;
+}
+
+#header .grid-path{
+	height: 10px;
+	background-image: url(../images/grid-pattern.png);
+}
+
+p{ line-height: 1.5em; }
+
+b{ font-weight: bold; }
+u{ text-decoration: underline; }
+
+div.status{
+	font-size: 16px;
+	margin: 10px 10px 10px 25px;
+}
+
+div.status ul.error{
+	padding: 5px 10px 10px 10px;
+	border: 1px solid #f55;
+	background-color: #fcc;
+}
+
+div.status ul.error li{
+	margin-top: 5px;
+	list-style-type: none;
+	list-style-image: url(../images/icons/s_error.png);
+	margin-left: 20px;
+	padding-left: 10px;
+	vertical-align: middle;
+}
+
+div.status ul.success{
+	padding: 5px 10px 10px 10px;
+	border: 1px solid #5f5;
+	background-color: #cfc;
+}
+
+div.status ul.success li{
+	margin-top: 5px;
+	list-style-type: none;
+	list-style-image: url(../images/icons/s_success.png);
+	margin-left: 20px;
+	padding-left: 10px;
+	vertical-align: middle;
+}
+
+ol{
+	list-style-type: decimal;
+	width: 700px;
+	margin-left: 60px;
+	font-size: 1.1em;
+}
+ol li{ margin-top: 10px; line-height: 1.5em;}
+p.software{ width: 800px; }
+
+p.action input{ width: 200px; height: 40px; font-weight: bold; font-family: Arial!important; }
+p.action { font-size: 14px!important; }
+
+#footer div.content{
+	padding-top: 0px;
+	margin-top: -20px;
+	text-align: center;
+}
+
+#footer div.content li{
+	margin-top: 5px;
+}
+
+#footer a{ text-decoration: none; }
+#footer a:hover{ text-decoration: underline; }

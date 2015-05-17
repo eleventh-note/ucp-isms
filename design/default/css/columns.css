@@ -1,0 +1,16 @@
+.content div.column{
+	float: left;
+}
+
+#column-first{
+	width: 160px;
+}
+
+#column-second{
+	width: 80%;
+	background-color: #eee;
+	border: 1px solid #aaa;
+	padding: 10px 20px 30px 10px;
+	color: 333;
+	overflow: hidden;
+}

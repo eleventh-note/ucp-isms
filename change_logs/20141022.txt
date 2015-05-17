@@ -1,0 +1,4 @@
+1) Modified database to add the ORNumber
+
+	ALTER TABLE `enl-enlistment_details`
+	  ADD OrNumber VARCHAR(50) NOT NULL

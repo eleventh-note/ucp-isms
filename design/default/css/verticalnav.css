@@ -1,0 +1,23 @@
+#body .vertical-nav .border-top{width: 150px;height: 28px;background-image: url(../images/menu_top.png); background-position: 150px;}
+#body .vertical-nav .border-btm{width: 150px;height: 25px;background-image: url(../images/menu_btm.png); background-position: 150px;}
+#body .vertical-nav .body{width: 150px;background-color: #343434; color: #fff;}
+
+#body .vertical-nav a{ color: #fff; text-decoration: none; display: block; height: 20px; font-size: 1.2em; text-align: right; margin-right: 10px; padding: 5px 5px 0px 0px; border-top: 1px solid #777; }
+#body .vertical-nav a:hover{ background-color: #666; }
+#body .vertical-nav a.first{ border-top: 0; }
+
+#isms a#menu-home{ color: #ffc000; }
+#audit a#menu-audit{ color: #ffc000; }
+#users a#menu-users{ color: #ffc000; }
+#facilities a#menu-facilities{ color: #ffc000; }
+#employment a#menu-employment{ color: #ffc000; }
+#college a#menu-colleges{ color: #ffc000; }
+#school a#menu-schoolplusplus{ color: #ffc000; }
+#students a#menu-students{ color: #ffc000; }
+#general a#menu-general{ color: #ffc000; }
+#schedules a#menu-schedules{ color: #ffc000; }
+#enlistment a#menu-enlistment{ color: #ffc000; }
+#grades a#menu-grades{ color: #ffc000; }
+#finance a#menu-finance{ color: #ffc000; }
+#statistics a#menu-statistics{ color: #ffc000; }
+#reports a#menu-reports{ color: #ffc000; }

@@ -1,0 +1,15 @@
+Files:
+
+Modified enlistment-view.php
+Added _libs/classes/fin-other-fees.inc.php
+Modified schoolplusplus-subjects.php
+
+Database:
+
+Added Table fin-other-fees
+Modified Table sch-subjects
+  - Add Column UnitsLab INT NOT NULL DEFAULT 0
+
+Modifed Table enl-enlistment_details
+  - Add Column LecFee DECIMAL(15,2) NOT NULL DEFAULT 0
+  - Add Column LabFee DECIMAL(15,2) NOT NULL DEFAULT 0

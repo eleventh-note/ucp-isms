@@ -1,0 +1,7 @@
+#body .horizontal-nav{
+margin-top:24px;
+}
+
+#body .horizontal-nav .border-top{width: 201px;height: 28px;background-image: url(../images/menu_top.png);}
+#body .horizontal-nav .border-btm{width: 201px;height: 25px;background-image: url(../images/menu_btm.png);}
+#body .horizontal-nav .body{width: 201px;background-color: #343434; color: #fff;}

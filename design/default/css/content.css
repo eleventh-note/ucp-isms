@@ -1,0 +1,16 @@
+div#body{
+	padding-bottom: 20px;
+}
+
+div#column-second h1{ font-size: 16px; padding: 10px 30px 7px 0px; border-bottom: 1px dashed #333; margin-top: 10px; }
+div#column-second h1:first-child{ font-size: 16px; padding: 0px 30px 7px 0px; border-bottom: 1px dashed #333; margin-top: 0px; border-top: 0;}
+
+div#column-second h1 span.School_Name{ color: #226555; }
+div#column-second h1 span.Highlight{ color: #226555; font-weight: bold; }
+
+div#column-second p{ margin: 10px 20px 0px 15px; 
+	font-size: 12px;
+}
+
+div#actions p{ font-size: 11px; }
+div#actions input{ font-size: 12px; font-family: "Century Gothic", Arial, Tahoma, Verdana, "Times New Roman"}
