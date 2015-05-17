@@ -145,7 +145,7 @@
 			}
 		</script>
 	</head>
-	<body id="reports">
+	<body id="reports"> 
 		<div id="container">
 			<div id="header">
 				<?php require_once("_system/main/banner.inc.php"); ?>

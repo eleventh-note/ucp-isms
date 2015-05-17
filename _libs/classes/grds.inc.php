@@ -358,6 +358,86 @@
 			return $rows;
 		}
 
+		function getSchoolYearsWithGrades($studentId){
+			$rows = array();
+			$conn = $this->conn;
+
+			$query = "SELECT DISTINCT CONCAT(pd.LastName, ', ', pd.FirstName, ' ', pd.MiddleName) AS `studentName`, ";
+			$query .= "pd.StudentNo, ";
+			//$query .= "enlistedSubject AS `enlistedSubjectId`, ss.Faculty, es.Name AS `section`, ";
+			//$query .= "s.Code AS `subjectCode`, s.Description AS `subjectDescription`, ";
+			//$query .= "CONCAT(se.LastName, ', ', se.FirstName, ' ', se.MiddleName) AS `facultyName`, ";
+			//$query .= "enl.SectionSubject AS `sectionSubjectId`, ";
+			$query .= "sem.SemesterId, sem.Description AS `semester`, ";
+			$query .= "sy.SchoolYearID, CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
+			$query .= "FROM `grd-grades` gg ";
+			$query .= "LEFT JOIN `enl-student_enlistment` enl ON enl.EnlistmentID=gg.enlistedSubject ";
+			$query .= "LEFT JOIN `enl-subject_schedule` ss ON ss.SectionSubject=enl.SectionSubject ";
+			$query .= "LEFT JOIN `sch-college_faculties` cf ON cf.FacultyID=ss.Faculty ";
+			$query .= "LEFT JOIN `sch-employees` se ON se.EmployeeID=cf.Employee ";
+			$query .= "LEFT JOIN `sch-curriculum_subjects` cs ON cs.CurriculumSubjectID=enl.Subject ";
+			$query .= "LEFT JOIN `sch-subjects` s ON s.SubjectID=cs.Subject ";
+			$query .= "LEFT JOIN `enl-section_subjects` ess ON ess.SectionSubjectID=ss.SectionSubject ";
+			$query .= "LEFT JOIN `enl-sections` es ON es.SectionID=ess.Section ";
+			$query .= "LEFT JOIN `spr-personal_data` pd ON pd.StudentID=enl.StudentID ";
+			$query .= "LEFT JOIN `sch-school_years` sy ON sy.SchoolYearId=enl.SY ";
+			$query .= "LEFT JOIN `sch-semesters` sem ON sem.SemesterId=enl.Semester ";
+			$query .= "WHERE enl.StudentID={$studentId} ";
+			$query .= "GROUP BY gradeId ";
+			$query .= "ORDER BY schoolYear, semester, s.Code ";
+			$result = $conn->query($query);
+
+			if($result){
+				while($row = $result->fetch_assoc()){
+					$rows[] = $row;
+				}
+			} else {
+				var_dump($conn->error);
+			}
+
+			return $rows;
+		}
+
+		function getSemesterWithGrades($studentId){
+			$rows = array();
+			$conn = $this->conn;
+
+			$query = "SELECT DISTINCT CONCAT(pd.LastName, ', ', pd.FirstName, ' ', pd.MiddleName) AS `studentName`, ";
+			$query .= "pd.StudentNo, ";
+			//$query .= "enlistedSubject AS `enlistedSubjectId`, ss.Faculty, es.Name AS `section`, ";
+			//$query .= "s.Code AS `subjectCode`, s.Description AS `subjectDescription`, ";
+			//$query .= "CONCAT(se.LastName, ', ', se.FirstName, ' ', se.MiddleName) AS `facultyName`, ";
+			//$query .= "enl.SectionSubject AS `sectionSubjectId`, ";
+			$query .= "sem.SemesterId, sem.Description AS `semester`, ";
+			$query .= "sy.SchoolYearID, CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
+			$query .= "FROM `grd-grades` gg ";
+			$query .= "LEFT JOIN `enl-student_enlistment` enl ON enl.EnlistmentID=gg.enlistedSubject ";
+			$query .= "LEFT JOIN `enl-subject_schedule` ss ON ss.SectionSubject=enl.SectionSubject ";
+			$query .= "LEFT JOIN `sch-college_faculties` cf ON cf.FacultyID=ss.Faculty ";
+			$query .= "LEFT JOIN `sch-employees` se ON se.EmployeeID=cf.Employee ";
+			$query .= "LEFT JOIN `sch-curriculum_subjects` cs ON cs.CurriculumSubjectID=enl.Subject ";
+			$query .= "LEFT JOIN `sch-subjects` s ON s.SubjectID=cs.Subject ";
+			$query .= "LEFT JOIN `enl-section_subjects` ess ON ess.SectionSubjectID=ss.SectionSubject ";
+			$query .= "LEFT JOIN `enl-sections` es ON es.SectionID=ess.Section ";
+			$query .= "LEFT JOIN `spr-personal_data` pd ON pd.StudentID=enl.StudentID ";
+			$query .= "LEFT JOIN `sch-school_years` sy ON sy.SchoolYearId=enl.SY ";
+			$query .= "LEFT JOIN `sch-semesters` sem ON sem.SemesterId=enl.Semester ";
+			$query .= "WHERE enl.StudentID={$studentId} ";
+			$query .= "GROUP BY gradeId ";
+			$query .= "ORDER BY schoolYear, semester, s.Code ";
+			$result = $conn->query($query);
+
+			if($result){
+				while($row = $result->fetch_assoc()){
+					$rows[] = $row;
+				}
+			} else {
+				var_dump($conn->error);
+			}
+
+			return $rows;
+		}
+
 		function getStudentSubjectsWithGrades($studentId){
 			$rows = array();
 			$conn = $this->conn;
@@ -368,7 +448,7 @@
 			$query .= "s.Code AS `subjectCode`, s.Description AS `subjectDescription`, ";
 			$query .= "CONCAT(se.LastName, ', ', se.FirstName, ' ', se.MiddleName) AS `facultyName`, ";
 			$query .= "enl.SectionSubject AS `sectionSubjectId`, sem.Description AS `semester`, ";
-			$query .= "CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
+			$query .= "sy.SchoolYearID, CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
 			$query .= "FROM `grd-grades` gg ";
 			$query .= "LEFT JOIN `enl-student_enlistment` enl ON enl.EnlistmentID=gg.enlistedSubject ";
 			$query .= "LEFT JOIN `enl-subject_schedule` ss ON ss.SectionSubject=enl.SectionSubject ";

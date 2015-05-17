@@ -72,7 +72,8 @@
 	}
 
 	$students = $hnd->getStudentSubjectsWithGrades($studentId);
-	print_r($students);
+	$school_years = $hnd->getSchoolYearsWithGrades($studentId);
+	$semesters = $hnd->getSemesterWithGrades($studentId);
 
 	if(sizeof($students) == 0){
 		$_SESSION['error'][] = "Grades are still not available for the selected student in the current semester.";
@@ -121,7 +122,7 @@
 	//###TIMER###
 ?>
 	</head>
-	<body id="grades">
+	<body id="reports">
 		<div id="container">
 			<div id="header">
 				<?php require_once("_system/main/banner.inc.php"); ?>
@@ -140,7 +141,7 @@
 					<div class="column" id="column-second">
 						<div class="inner">
 							<h1>
-								<span class="Highlight">Grades Administration &raquo; View Grades</span>
+								<span class="Highlight">Reports &raquo; Grades Viewer &raquo; Search Student</span>
 							</h1>
 							<form action="grades-encode-process.php" method="post" >
 							<div id="actions">
@@ -177,14 +178,29 @@
 										</td>
 									</tr>
 									<tr class="info">
-										<td class="label">Subjects</td>
+										<td class="label">School Year</td>
 										<td class="input">: 
-											<select id="oSchoolYear" class="small" name="school_year">
+											<select id="oReportGradesViewerSy" class="medium" name="school_year">
 												<option value="-1"></option>
 												<?php
-													foreach($curriculums as $item){
-														echo "<option value=\"{$item->curriculum_id}\">";
-															echo $item->info;
+													foreach($school_years as $sy){
+														echo "<option value=\"{$sy['SchoolYearID']}\">";
+															echo $sy['schoolYear'];
+														echo "</option>";
+													}
+												?>
+											</select> 
+										</td>
+									</tr>	
+									<tr class="info">
+										<td class="label">Semesters</td>
+										<td class="input">: 
+											<select id="oReportGradesViewerSem" class="medium" name="semester">
+												<option value="-1"></option>
+												<?php
+													foreach($semesters as $sem){
+														echo "<option value=\"{$sem['SemesterId']}\">";
+															echo $sem['semester'];
 														echo "</option>";
 													}
 												?>
@@ -196,8 +212,8 @@
 
 							<div id="actions">
 								<p class="action">
-									<input type="button" value="Go Back" onclick="window.location='grades-viewer-search.php'" />
-									<input type="button" value="Get PDF" onclick="window.open('grades-viewer-pdf.php?id=<?php echo $studentId; ?>');" />
+									<input type="button" value="Go Back" onclick="window.location='reports-grades-viewer-search.php'" />
+									<input type="button" value="Get PDF" onclick="openReportsGradeViewer(<?php echo $studentId; ?>);" />
 								</p>
 							</div>
 							</form>

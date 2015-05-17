@@ -32,4 +32,12 @@ function ActivateTableHoverEffects(){
 	);
 }
 
+// Reports->Grades->Viewer
+function openReportsGradeViewer(studentId) {
+	var syId = $('#oReportGradesViewerSy').val();
+	var semesterId = $('#oReportGradesViewerSem').val();
+	//alert('reports-grades-viewer-pdf.php?id=' + studentId + '&sy=' + syId + '&semester=' + semesterId);
+	window.open('reports-grades-viewer-pdf.php?id=' + studentId + '&sy=' + syId + '&semester=' + semesterId);
+}
+
 ActivateTableHoverEffects();
