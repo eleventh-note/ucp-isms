@@ -367,18 +367,21 @@
 										</tr>
 										<tr class="input">
 											<td>
-												<select name="school_years" class="employment_status small">
+												<?php $selected_entry_year = 0; ?>
+												<select name="school_years" class="employment_status small" disabled="disabled">
 													<option value="-1"></option>
 													<?php
 														foreach($school_years as $item){
 															if(isset($_school_year)){
 																if($_school_year == $item->year_id){
+																	$selected_entry_year = $item->year_id;
 																	echo "<option value=\"{$item->year_id}\" selected=\"selected\">SY {$item->start}-{$item->end}</option>";
 																} else {
 																	echo "<option value=\"{$item->year_id}\">SY {$item->start}-{$item->end}</option>";
 																}
 															} else {
 																if($item->active == 1){
+																	$selected_entry_year = $item->year_id;
 																	echo "<option value=\"{$item->year_id}\" selected=\"selected\">SY {$item->start}-{$item->end}</option>";
 																} else {
 																	echo "<option value=\"{$item->year_id}\">SY {$item->start}-{$item->end}</option>";
@@ -387,20 +390,24 @@
 														}
 													?>
 												</select>
+												<input type="hidden" name="school_years" value="<?php echo $selected_entry_year; ?>" />
 											</td>
 											<td>
-												<select name="semesters" class="employment_status small">
+												<?php $selected_entry_semester = 0; ?>
+												<select name="semesters" class="employment_status small" disabled="disabled">
 													<option value="-1"></option>
 													<?php
 														foreach($semesters as $item){
 															if(isset($_semester)){
 																if($_semester == $item->semester_id){
+																	$selected_entry_semester = $item->semester_id;
 																	echo "<option value=\"{$item->semester_id}\" selected=\"selected\">{$item->description}</option>";
 																} else {
 																	echo "<option value=\"{$item->semester_id}\">{$item->description}</option>";
 																}
 															} else {
 																if($item->active == 1){
+																	$selected_entry_semester = $item->semester_id;
 																	echo "<option value=\"{$item->semester_id}\" selected=\"selected\">{$item->description}</option>";
 																} else {
 																	echo "<option value=\"{$item->semester_id}\">{$item->description}</option>";
@@ -409,6 +416,7 @@
 														}
 													?>
 												</select>
+												<input type="hidden" name="semesters" value="<?php echo $selected_entry_semester; ?>" />
 											</td>
 											<td></td>
 											<td></td>
