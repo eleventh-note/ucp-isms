@@ -1,4 +1,4 @@
-*<?php
+<?php
 	/* #-------------------------------------------------
 	   #
 	   #	Description:	Template for 00 Default Layout

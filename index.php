@@ -22,7 +22,6 @@
 
 //::START OF 'CONFIGURATION'
 	require_once("_system/_config/sys_config.php");
-	echo CLASSLIST . "sentry.inc.php";
 	require_once(CLASSLIST . "sentry.inc.php");
 	//configurations can be overriden here
 	
