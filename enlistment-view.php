@@ -489,16 +489,16 @@
 															if(isset($_discount)){
 																if($item->discount_id == $_discount){
 																	echo "<option value=\"{$item->discount_id}\" selected=\"selected\">";
-																		echo $item->description . " ({$item->percentage}%)";
+																		echo $item->description .  " [" . number_format($item->price, 2 ,".",",") . "]";
 																	echo "</option>";
 																} else {
 																	echo "<option value=\"{$item->discount_id}\">";
-																		echo $item->description . " ({$item->percentage}%)";
+																		echo $item->description .  " [" . number_format($item->price, 2 ,".",",") . "]";
 																	echo "</option>";
 																}
 															} else {
 																echo "<option value=\"{$item->discount_id}\">";
-																	echo $item->description . " ({$item->percentage}%)";
+																	echo $item->description .  " [" . number_format($item->price, 2 ,".",",") . "]";
 																echo "</option>";
 															}
 														}

@@ -111,12 +111,6 @@
 			}
 		}
 
-		print_r($other_fees);
-		print_r($other_fees_id);
-		print_r($other_fees_value);
-		print_r($total_other_fees);
-//		exit();
-
 		//#ADD ENLISTMENT
 		if(isset($_POST['add_enlist'])){
 			$loading_status = (int) $_POST['loading_status'];
@@ -286,12 +280,6 @@
 			$fees['registration_fee'] = (float) $hnd_fin->GetRegistrationFee();
 			//Tuition Fee
 			$fees['tuition_fee'] = (float) $hnd_fin->ComputeTuitionFee_Cash($lec_units, $lecFee, $lab_units, $labFee);
-			print_r($enlisted_subjects);
-			echo '<br/>';
-			echo $lec_units;
-			echo '<br/>';
-			echo $lab_units;
-			echo '<br/>';
 			//Miscellaneous Fee
 			$fees['miscellaneous_fee'] = (float) $hnd_fin->GetMiscFee();
 			//Entrance Fee = Registration + Miscellaneous
@@ -313,6 +301,10 @@
 			$_SESSION['other_fees'] = implode('_', $other_fees_id);
 			$_SESSION['or_number'] = $orNumber;
 
+			$sch = null;
+			$dsc = null;
+			$discount_total = 0;
+
 			if($s > 0){ $sch = $dict_scholarships[$s]; }
 			if($d > 0){ $dsc = $dict_discounts[$d]; }
 
@@ -321,14 +313,13 @@
 			//## CONVERT ALL TO NUMBER FORMAT
 			if($payment_mode==INSTALLMENT && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
 
-
 				$total = $fees['registration_fee'] + $total_other_fees + $fees['miscellaneous_fee'] + $fees['tuition_fee'];
 				$tpercentage = 0;
 				if(isset($sch)){ $tpercentage += $sch->percentage; }
-				if(isset($dsc)){ $tpercentage += $dsc->percentage; }
+				$discount_total = (isset($dsc)) ? $dsc->price : 0;
 
 				$total = $fees['registration_fee'] + $total_other_fees + $fees['miscellaneous_fee'] + ($fees['tuition_fee'] * (1-$tpercentage/100));
-				$total = $total * 1.05;
+				$total = $total * 1.05 - $discount_total;
 
 			} elseif($payment_mode==CASH && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
 
@@ -337,8 +328,10 @@
 
 				$tpercentage = 0;
 				if(isset($sch)){ $tpercentage += $sch->percentage; }
-				if(isset($dsc)){ $tpercentage += $dsc->percentage; }
+				$discount_total = (isset($dsc)) ? $dsc->price : 0;
+
 				$total = $fees['registration_fee'] + $total_other_fees + $fees['miscellaneous_fee'] + ($fees['tuition_fee'] * (1-$tpercentage/100)) - $cash_discount;
+				$total -= $discount_total;
 			}
 
 			if(sizeof($_SESSION['enlisted_subjects']) > 0){

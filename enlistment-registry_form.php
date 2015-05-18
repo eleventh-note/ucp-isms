@@ -90,6 +90,9 @@
 	$scholarships = $hnd_fi->GetScholarshipsByKey();
 	$discounts = $hnd_fi->GetDiscountsByKey();
 
+	$scholarship = null;
+	$discount = null;
+
 	$scholarship_id = (int) $_GET['s'];
 	$discount_id = (int) $_GET['d'];
 
@@ -139,6 +142,8 @@
 			}
 
 			$total_mixed_fees = $total_laboratory_fee + $total_energy_fee + $total_other_fees;
+		} else {
+			$other_fees = array();
 		}
 
 		$date = $hnd_enl->GetEnrollmentDate($id);
@@ -188,7 +193,7 @@
 			$all_units = 0;
 			$lec_units = 0;
 			$lab_units = 0;
-		  $total_half_priced_subjects = 0;
+		  	$total_half_priced_subjects = 0;
 
 			//##FILL DATE WITH CURRENTLY ENLISTED SUBJECTS
 			$is_old = false;
@@ -398,16 +403,24 @@
 				if($payment_mode==INSTALLMENT && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
 
 					$total = $fees['registration_fee'] + $total_mixed_fees + $fees['miscellaneous_fee'] + $fees['tuition_fee'];
-					$total_less_scholarship = $total;
-					$partial_less_scholarship = 0;
+					$computed_scholarship_discount = 0;
+					$fixed_discount = (isset($discount)) ? $discount->price : 0;
+
 					$minimum_downpayment = ($total) * MINIMUM_DOWNPAYMENT;
 
 					if (isset($scholarship)) {
-						$partial_less_scholarship = $fees['tuition_fee'] * ($scholarship->percentage/100);
+						$computed_scholarship_discount = $fees['tuition_fee'] * ($scholarship->percentage/100);
 					}
 
-					$total_less_downpayment = ($total_less_scholarship - $downpayment) * 1.05;
-					$partials = $total_less_downpayment / 3;
+					$total_less_scholarship = $total - $computed_scholarship_discount; // TOTAL FEE - SCHOLARSHIP
+
+					$total_less_downpayment = ($total_less_scholarship - $downpayment); // LESS DOWNPAYMENT
+					$total_add_surcharge = $total_less_downpayment  * 1.05; // ADD SURCHARGE from INSTALLMENT
+					$partials = $total_add_surcharge / 3;
+
+					$finals_fee = $partials - $fixed_discount; // FINALS_FEE - FIXED DISCOUNT
+					$total_less_fixed_discount = round($partials, 2) * 2 + round($finals_fee, 2);
+					$total_discount = $computed_scholarship_discount + $fixed_discount;
 
 					$pdf->SetFont('Arial', 'B', '10');
 					$pdf->Cell(250,15,'INSTALLMENT BASIS:',1,0,'C');
@@ -418,8 +431,12 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($fees['registration_fee'],2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
-					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(130,15,'(minimum downpayment =       ' . number_format($minimum_downpayment,2,".",",") . ')',0,0,'L');
+					//$pdf->SetFont('Arial', '', '9');
+					//$pdf->Cell(130,15,'(minimum downpayment =       ' . number_format($minimum_downpayment,2,".",",") . ')',0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(130,15,'Downpayment:',0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(120,15,"Php " . number_format($downpayment ,2,".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
@@ -435,7 +452,7 @@
 					$pdf->Cell(120,15,"Php " . number_format($lab_units * $labFee * 3,2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'PAYMENT',0,0,'L');
+					$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -445,9 +462,9 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Prelim: ",0,0,'L');
+					$pdf->Cell(130,15,"Prelim: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format($partials,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format($partials,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -457,9 +474,9 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Midterm: ",0,0,'L');
+					$pdf->Cell(130,15,"Midterm: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format($partials,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format($partials,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -469,9 +486,9 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Finals: ",0,0,'L');
+					$pdf->Cell(130,15,"Finals (less fixed discount): ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format($partials - $partial_less_scholarship,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format($finals_fee,2,".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
@@ -479,60 +496,103 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($total_energy_fee,2,".",","),0,0,'R');
 
-					if(isset($scholarship)){
-						$pdf->Cell(30, 15,'');
+					$pdf->Cell(30, 15,'');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(185,15,"TOTAL",0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(65,15,"Php " . number_format($total_less_fixed_discount ,2,".",","), 'T',0,'R');
+
+					$pdf->Ln();
+
+					if(count($other_fees) > 0) {
 						$pdf->SetFont('Arial', 'B', '9');
-						$pdf->Cell(120,15,"Less {$scholarship->percentage}%:",0,0,'L');
+						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
 						$pdf->SetFont('Arial', '', '9');
-						$pdf->Cell(20,15,"Php " . number_format($fees['tuition_fee'] * ($scholarship->percentage/100) ,2,".",","),0,0,'R');
-						//$pdf->Ln();
-						//$pdf->SetFont('Arial', 'B', '9');
-						//$pdf->Cell(130,15,'Total Fee:',0,0,'L');
-						//$pdf->SetFont('Arial', 'B', '9');
-						//$pdf->Cell(120,15,"Php " . number_format($total-$fees['tuition_fee'] * ($scholarship->percentage/100),2,".",","),'T',0,'R');
+						$pdf->Ln();
 					}
 
-					$pdf->Ln();
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'Laboratory Fee:',0,0,'L');
-					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($total_laboratory_fee,2,".",","),0,0,'R');
-					$pdf->Ln();
+					$scholarship_displayed = !(isset($scholarship));
+					$discount_displayed = !(isset($discount));
+					$fee_total_displayed = false;
+					$discount_details = array();
 
-					foreach ($other_fees as $fee) {
-						$arr = explode('_', $fee);
-						$feeDetails = null;
-						foreach ($hnd_fi->GetFees($arr[0]) as $feeItem)
-							$feeDetails = $feeItem;
+					if(isset($scholarship) || isset($discount)) {
+						//array_push($discount_details, "#####");
+						array_push($discount_details, "DISCOUNTS:##########B#####");
 
-						if ($feeDetails->fee_type == LAB_FEE) {
-							$pdf->SetFont('Arial', '', '9');
-							$pdf->Cell(130,15, '  - ' . $feeDetails->description,0,0,'L');
-							$pdf->SetFont('Arial', '', '9');
-							$pdf->Cell(120,15,"Php " . number_format($feeDetails->price,2,".",","),0,0,'R');
-							$pdf->Ln();
+						if(isset($scholarship)) {
+							$discount_string = $scholarship->description . " (" . $scholarship->percentage . "%)#####" . number_format($computed_scholarship_discount, 2, ".", ",") . "##########";
+							array_push($discount_details, $discount_string);
 						}
+
+						if(isset($discount)) {
+							$discount_string = $discount->description . "#####" . number_format($discount->price, 2, ".", ",") . "##########";
+							array_push($discount_details, $discount_string);
+						}
+
+						$discount_string = "TOTAL DISCOUNT#####" . number_format($total_discount, 2, ".", ",") . "#####B#####T";
+						array_push($discount_details, $discount_string);
 					}
 
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'Total Fee:',0,0,'L');
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(120,15,"Php " . number_format($total,2,".",","),'T',0,'R');
+					// each loop is a line
+					$fee_total_displayed_toggle = false;
+					while (
+						count($other_fees) > 0 
+						|| !$fee_total_displayed
+						|| count($discount_details) > 0
+					) {
 
-					$pdf->Ln();
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'Downpayment:',0,0,'L');
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(120,15,"Php " . number_format($downpayment ,2,".",","),0,0,'R');
-					$pdf->Ln();
+						$fee = array_shift($other_fees);
+
+						if (isset($fee)) {
+							$arr = explode('_', $fee);
+							$feeDetails = null;
+							foreach ($hnd_fi->GetFees($arr[0]) as $feeItem) $feeDetails = $feeItem;
+
+							if ($feeDetails->fee_type == LAB_FEE) {
+								$pdf->SetFont('Arial', '', '9');
+								$pdf->Cell(130,15, '  - ' . $feeDetails->description,0,0,'L');
+								$pdf->SetFont('Arial', '', '9');
+								$pdf->Cell(120,15,"Php " . number_format($feeDetails->price,2,".",","),0,0,'R');
+							}
+						} else {
+							if(!$fee_total_displayed) {
+								$pdf->SetFont('Arial', 'B', '9');
+								$pdf->Cell(185,15,'Total Fee:',0,0,'L');
+								$pdf->SetFont('Arial', 'B', '9');
+								$pdf->Cell(65,15,"Php " . number_format($total,2,".",","),'T',0,'R');
+								$fee_total_displayed_toggle = true;
+							}
+						}
+
+						$disc = array_shift($discount_details);
+						if (isset($disc)) {
+							$split = explode("#####", $disc);
+							$space = (!$fee_total_displayed) ? 30 : 280;
+							$pdf->Cell($space, 15, '', 0, 0, '');
+							$pdf->SetFont('Arial', $split[2], '9');
+							$pdf->Cell(185, 15, $split[0], 0, 0, 'L');
+							$pdf->Cell(65, 15, $split[1], $split[3], 0, 'R');
+						}
+
+
+						$pdf->Ln();
+						$fee_total_displayed = $fee_total_displayed_toggle;
+					}
 
 				} elseif($payment_mode==CASH && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
 
 					$total = $fees['registration_fee'] + $total_mixed_fees + $fees['miscellaneous_fee'] + $fees['tuition_fee'];
 					$total_less_all = $total - ($fees['tuition_fee'] - $total_half_priced_subjects) * .05;
+					$computed_scholarship_discount = 0;
+
+					$fixed_discount = (isset($discount)) ? $discount->price : 0;
 					if (isset ($scholarship)) {
-						$total_less_all -= $fees['tuition_fee'] * ($scholarship->percentage/100);
+						$computed_scholarship_discount = $fees['tuition_fee'] * ($scholarship->percentage/100);
 					}
+					$total_less_all -= $computed_scholarship_discount;
+					$total_discount = $fixed_discount + $computed_scholarship_discount;
+					
 					$pdf->SetFont('Arial', 'B', '10');
 					$pdf->Cell(250,15,'CASH BASIS:',1,0,'C');
 					$pdf->Ln();
@@ -542,8 +602,10 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($fees['registration_fee'],2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
-					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(130,15,'(minimum downpayment =       ' . number_format($total_less_all,2,".",",") . ')',0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(130,15,'Downpayment:',0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(120,15,"Php " . number_format($downpayment ,2,".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
@@ -559,7 +621,7 @@
 					$pdf->Cell(120,15,"Php " . number_format($lab_units * $labFee * 3,2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'PAYMENT',0,0,'L');
+					$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -569,9 +631,9 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Prelim: ",0,0,'L');
+					$pdf->Cell(130,15,"Prelim: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format(0,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format(0,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -581,9 +643,9 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Midterm: ",0,0,'L');
+					$pdf->Cell(130,15,"Midterm: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format(0,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format(0,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -593,23 +655,100 @@
 
 					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Finals: ",0,0,'L');
+					$pdf->Cell(130,15,"Finals (less fixed discount): ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(20,15,"Php " . number_format(0,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format(0,2,".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
 					$pdf->Cell(130,15,'Energy Fee:',0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($total_energy_fee,2,".",","),0,0,'R');
-					$pdf->Ln();
 
+					$pdf->Cell(30, 15,'');
 					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'Laboratory Fee:',0,0,'L');
-					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($total_laboratory_fee,2,".",","),0,0,'R');
+					$pdf->Cell(185,15,"TOTAL",0,0,'L');
+					$pdf->SetFont('Arial', 'B', '9');
+					$pdf->Cell(65,15,"Php " . number_format(0 ,2,".",","), 'T',0,'R');
 					$pdf->Ln();
 
+
+					if(count($other_fees) > 0) {
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
+						$pdf->SetFont('Arial', '', '9');
+						$pdf->Ln();
+					}
+
+					$scholarship_displayed = !(isset($scholarship));
+					$discount_displayed = !(isset($discount));
+					$fee_total_displayed = false;
+					$discount_details = array();
+
+					if(isset($scholarship) || isset($discount)) {
+						//array_push($discount_details, "#####");
+						array_push($discount_details, "DISCOUNTS:##########B#####");
+
+						if(isset($scholarship)) {
+							$discount_string = $scholarship->description . " (" . $scholarship->percentage . "%)#####" . number_format($computed_scholarship_discount, 2, ".", ",") . "##########";
+							array_push($discount_details, $discount_string);
+						}
+
+						if(isset($discount)) {
+							$discount_string = $discount->description . "#####" . number_format($discount->price, 2, ".", ",") . "##########";
+							array_push($discount_details, $discount_string);
+						}
+
+						$discount_string = "TOTAL DISCOUNT#####" . number_format($total_discount, 2, ".", ",") . "#####B#####T";
+						array_push($discount_details, $discount_string);
+					}
+
+					// each loop is a line
+					$fee_total_displayed_toggle = false;
+					while (
+						count($other_fees) > 0 
+						|| !$fee_total_displayed
+						|| count($discount_details) > 0
+					) {
+
+						$fee = array_shift($other_fees);
+
+						if (isset($fee)) {
+							$arr = explode('_', $fee);
+							$feeDetails = null;
+							foreach ($hnd_fi->GetFees($arr[0]) as $feeItem) $feeDetails = $feeItem;
+
+							if ($feeDetails->fee_type == LAB_FEE) {
+								$pdf->SetFont('Arial', '', '9');
+								$pdf->Cell(130,15, '  - ' . $feeDetails->description,0,0,'L');
+								$pdf->SetFont('Arial', '', '9');
+								$pdf->Cell(120,15,"Php " . number_format($feeDetails->price,2,".",","),0,0,'R');
+							}
+						} else {
+							if(!$fee_total_displayed) {
+								$pdf->SetFont('Arial', 'B', '9');
+								$pdf->Cell(185,15,'Total Fee:',0,0,'L');
+								$pdf->SetFont('Arial', 'B', '9');
+								$pdf->Cell(65,15,"Php " . number_format($total,2,".",","),'T',0,'R');
+								$fee_total_displayed_toggle = true;
+							}
+						}
+
+						$disc = array_shift($discount_details);
+						if (isset($disc)) {
+							$split = explode("#####", $disc);
+							$space = (!$fee_total_displayed) ? 30 : 280;
+							$pdf->Cell($space, 15, '', 0, 0, '');
+							$pdf->SetFont('Arial', $split[2], '9');
+							$pdf->Cell(185, 15, $split[0], 0, 0, 'L');
+							$pdf->Cell(65, 15, $split[1], $split[3], 0, 'R');
+						}
+
+
+						$pdf->Ln();
+						$fee_total_displayed = $fee_total_displayed_toggle;
+					}
+/*
 					foreach ($other_fees as $fee) {
 						$arr = explode('_', $fee);
 						$feeDetails = null;
@@ -641,21 +780,7 @@
 						$pdf->SetFont('Arial', 'B', '9');
 						$pdf->Cell(120,15,"Php " . number_format($total,2,".",","),'T',0,'R');
 					}
-
-					$pdf->Ln();
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'Cash Discount:',0,0,'L');
-					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format(($fees['tuition_fee'] - $total_half_priced_subjects) *.05 ,2,".",","),0,0,'R');
-					$pdf->Ln();
-					$pdf->Ln();
-					$pdf->SetFont('Arial', 'I', '9');
-					$pdf->Cell(130,15,'Discounted Price:',0,0,'L');
-					$pdf->SetFont('Arial', 'IB', '9');
-
-					$pdf->Cell(120,15,"Php " . number_format($total_less_all ,2,".",","),0,0,'R');
-					$pdf->Ln();
-
+*/
 				}
 
 			$pdf->Ln(); $pdf->Ln();
