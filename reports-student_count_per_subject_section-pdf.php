@@ -78,7 +78,7 @@
 		$school_year = $school_years[0];
 
 		$sort = isset($_GET['sort']) ? (int) $_GET['sort'] : 1;
-		$section_subjects = $hnd_r->GetStudentCountPerSubject($sort);
+		$section_subjects = $hnd_r->GetStudentCountPerSubject($sort, $semester->semester_id, $school_year->year_id);
 
 		//#CREATE PDF
 		$pdf = new PDF('P','pt','Letter');

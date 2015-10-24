@@ -70,7 +70,6 @@
 	//# OPTION IS INITIALLY SHOWN
 	$sy = $hnd_sc->GetActiveSchoolYear();
 	$sem = $hnd_sc->GetActiveSemester();
-
 	$colleges = $hnd_cg->GetColleges();
 
 	//REMOVE ALL POST
@@ -79,75 +78,6 @@
 		unset($_POST['course']);
 		unset($_POST['semester']);
 		unset($_POST['level']);
-	}
-
-	//# ERASE SESSION on sections
-	if(isset($_SESSION['section'])){
-		unset($_SESSION['section']);
-	}
-
-	//Dictionaries
-	$dict_colleges = $hnd_cg->GetCollegesByKey();
-	$dict_semesters = $hnd_sc->GetSemestersByKey();
-	$dict_levels = $hnd_co->GetYearLevelsByKey();
-
-	//Get Initial Sections without filter
-	$sections = $hnd_sh->GetSectionsByKey(null, $sy[0]->year_id, $sem[0]->semester_id);
-
-	if(isset($_POST['college'])){
-		$college_id = (int) $_POST['college'];
-		if($college_id > 0){
-			$colleges = $hnd_cg->GetColleges($college_id);
-			if(sizeof($colleges) > 0){
-				$college = $colleges[0];
-				$courses = $hnd_co->GetCourses($college->college_id);
-				$sections = $hnd_sh->GetSectionsByCollege($college_id, $sy[0]->year_id, $sem[0]->semester_id);
-			}
-
-		} else {
-			unset($_POST['college']);
-		}
-	}
-
-	if(isset($_POST['course'])){
-		$course_id = (int) $_POST['course'];
-		if($course_id > 0){
-			$courses = $hnd_co->GetCourses($college_id,$course_id);
-			if(sizeof($courses) > 0){
-				$course = $courses[0];
-				$levels = $hnd_co->GetYearLevels();
-				$sections = $hnd_sh->GetSectionsByCourse($course_id, $sy[0]->year_id, $sem[0]->semester_id);
-			}
-		} else {
-			unset($_POST['course']);
-		}
-	}
-
-	// if(isset($_POST['semester'])){
-		// $semester_id = (int) $_POST['semester'];
-		// if($semester_id > 0){
-			// $semesters = $hnd_sc->GetSemesters($semester_id);
-			// if(sizeof($semesters) > 0){
-				// $semester = $semesters[0];
-				// $levels = $hnd_co->GetYearLevels();
-			// }
-		// } else {
-			// unset($_POST['semester']);
-		// }
-	// }
-
-	if(isset($_POST['level'])){
-		$level_id = (int) $_POST['level'];
-		if($level_id > 0){
-			$levels = $hnd_co->GetYearLevels($level_id);
-			if(sizeof($levels) > 0){
-				$level = $levels[0];
-				$levels = $hnd_co->GetYearLevels();
-				$sections = $hnd_sh->GetSectionsByCourse($course_id, $sy[0]->year_id, $sem[0]->semester_id, $level_id);
-			}
-		} else {
-			unset($_POST['level']);
-		}
 	}
 
 	//##### PROCESS ERROR or SUCCESS
