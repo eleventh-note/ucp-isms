@@ -31,6 +31,7 @@
 	require_once(CLASSLIST . "reg.inc.php");
 	require_once(CLASSLIST . "grds.inc.php");
 	require_once(CLASSLIST . "schl.inc.php");
+	require_once(CLASSLIST . "stdnts.inc.php");
 //::END OF 'CONFIGURATION'
 
 	//# General Variables - shown in all documents for easy modification
@@ -63,6 +64,7 @@
 
 	$hnd = new GradesManager($conn);
 	$hnd_sc = new SchoolManager($conn);
+	$std = new StudentManager($conn);
 
 	if(isset($_GET['id'])){
 		$studentId = (int) $_GET['id'];
@@ -71,18 +73,12 @@
 		exit();
 	}
 
-	$students = $hnd->getStudentSubjectsWithGrades($studentId);
+	$spr = $std->GetSprById($studentId);
 	$school_years = $hnd->getSchoolYearsWithGrades($studentId);
 	$semesters = $hnd->getSemesterWithGrades($studentId);
 
-	if(sizeof($students) == 0){
-		$_SESSION['error'][] = "Grades are still not available for the selected student in the current semester.";
-		header("Location: reports-grades-viewer-search.php");
-		exit();
-	}
-
-	$studentName = $students[0]['studentName'];
-	$studentNo = $students[0]['StudentNo'];
+	$studentName = $spr[0]['studentName'];
+	$studentNo = $spr[0]['StudentNo'];
 	$conn->Close();
 
 	//##### PROCESS ERROR or SUCCESS
@@ -146,8 +142,8 @@
 							<form action="grades-encode-process.php" method="post" >
 							<div id="actions">
 								<p class="action">
-									<input type="button" value="Go Back" onclick="window.location='grades-viewer-search.php'" />
-									<input type="button" value="Get PDF" onclick="window.open('grades-viewer-pdf.php?id=<?php echo $studentId; ?>');" />
+									<input type="button" value="Go Back" onclick="window.location='reports-grades-viewer-search.php'" />
+									<input type="button" value="Get PDF" onclick="openReportsGradeViewer(<?php echo $studentId; ?>);" />
 								</p>
 							</div>
 							<?php
@@ -179,7 +175,7 @@
 									</tr>
 									<tr class="info">
 										<td class="label">School Year</td>
-										<td class="input">: 
+										<td class="input">:
 											<select id="oReportGradesViewerSy" class="medium" name="school_year">
 												<option value="-1"></option>
 												<?php
@@ -189,12 +185,12 @@
 														echo "</option>";
 													}
 												?>
-											</select> 
+											</select>
 										</td>
-									</tr>	
+									</tr>
 									<tr class="info">
 										<td class="label">Semesters</td>
-										<td class="input">: 
+										<td class="input">:
 											<select id="oReportGradesViewerSem" class="medium" name="semester">
 												<option value="-1"></option>
 												<?php
@@ -206,7 +202,7 @@
 												?>
 											</select>
 										</td>
-									</tr>								
+									</tr>
 								</table>
 							</div>
 

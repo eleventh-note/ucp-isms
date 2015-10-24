@@ -74,10 +74,18 @@
 		$sy = (int) $_GET['sy'];
 		$sem = (int) $_GET['semester'];
 		//Sem & Year
-		$semesters = $hnd_sc->GetActiveSemester();
-		$semester = $semesters[0];
-		$school_years = $hnd_sc->GetActiveSchoolYear();
-		$school_year = $school_years[0];
+		$semesters = $hnd_sc->GetSemesters($sem);
+		$school_years = $hnd_sc->GetSchoolYearsByKey($sy);
+
+		$school_year = null; //$school_years[0];
+		foreach ($school_years as $s) {
+			$school_year = $s;
+		}
+
+		$semester = null;
+		foreach ($semesters as $s) {
+			$semester = $s;
+		}
 
 		$grades = $hnd->getStudentGrades($studentId, $sy, $sem);
 
@@ -211,12 +219,6 @@
 					$valid = false;
 				}
 
-				if((float)$finalGrade <= 3.00){
-					$remarks = "PASSED";
-				} elseif($finalGrade > 3.00){
-					$remarks = "FAILED";
-				}
-
 				switch($finalGrade){
 					case 'INC':
 						$valid = false;
@@ -228,12 +230,18 @@
 						break;
 				}
 
+				if((float)$finalGrade <= 3.00){
+					$remarks = "PASSED";
+				} elseif($finalGrade > 3.00){
+					$remarks = "FAILED";
+				}
+
 				if($midtermGrade == "" && $preFinalGrade == ""){
 					$valid = false;
 					$remarks = "";
 				}
 
-				if ($midtermGrade == '5.00' || $preFinalGrade == '5.00') {
+				if ($preFinalGrade == '5.00') {
 					$remarks = "FAILED";
 				}
 

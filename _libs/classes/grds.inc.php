@@ -95,7 +95,7 @@
 				//adjust the timelimit
 				set_time_limit(600);
 
-				echo "Total of " . sizeof($enlistedSubjects) . " record(s).";
+				//echo "Total of " . sizeof($enlistedSubjects) . " record(s).";
 				$timeStart = time();
 				foreach ($enlistedSubjects as $item){
 					//### INSERT
@@ -136,8 +136,8 @@
 
 				set_time_limit(60);
 
-				echo "<br/>Success: " . $successCount;
-				echo "<br/>Time Elapsed: " . (time() - $timeStart);
+				//echo "<br/>Success: " . $successCount;
+				//echo "<br/>Time Elapsed: " . (time() - $timeStart);
 				if($successCount == sizeof($enlistedSubjects)){
 					$result = true;
 				} else {
@@ -362,13 +362,11 @@
 			$rows = array();
 			$conn = $this->conn;
 
-			$query = "SELECT DISTINCT CONCAT(pd.LastName, ', ', pd.FirstName, ' ', pd.MiddleName) AS `studentName`, ";
-			$query .= "pd.StudentNo, ";
+			$query = "SELECT DISTINCT ";
 			//$query .= "enlistedSubject AS `enlistedSubjectId`, ss.Faculty, es.Name AS `section`, ";
 			//$query .= "s.Code AS `subjectCode`, s.Description AS `subjectDescription`, ";
 			//$query .= "CONCAT(se.LastName, ', ', se.FirstName, ' ', se.MiddleName) AS `facultyName`, ";
 			//$query .= "enl.SectionSubject AS `sectionSubjectId`, ";
-			$query .= "sem.SemesterId, sem.Description AS `semester`, ";
 			$query .= "sy.SchoolYearID, CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
 			$query .= "FROM `grd-grades` gg ";
 			$query .= "LEFT JOIN `enl-student_enlistment` enl ON enl.EnlistmentID=gg.enlistedSubject ";
@@ -384,7 +382,7 @@
 			$query .= "LEFT JOIN `sch-semesters` sem ON sem.SemesterId=enl.Semester ";
 			$query .= "WHERE enl.StudentID={$studentId} ";
 			$query .= "GROUP BY gradeId ";
-			$query .= "ORDER BY schoolYear, semester, s.Code ";
+			$query .= "ORDER BY schoolYear ";
 			$result = $conn->query($query);
 
 			if($result){
@@ -402,14 +400,8 @@
 			$rows = array();
 			$conn = $this->conn;
 
-			$query = "SELECT DISTINCT CONCAT(pd.LastName, ', ', pd.FirstName, ' ', pd.MiddleName) AS `studentName`, ";
-			$query .= "pd.StudentNo, ";
-			//$query .= "enlistedSubject AS `enlistedSubjectId`, ss.Faculty, es.Name AS `section`, ";
-			//$query .= "s.Code AS `subjectCode`, s.Description AS `subjectDescription`, ";
-			//$query .= "CONCAT(se.LastName, ', ', se.FirstName, ' ', se.MiddleName) AS `facultyName`, ";
-			//$query .= "enl.SectionSubject AS `sectionSubjectId`, ";
-			$query .= "sem.SemesterId, sem.Description AS `semester`, ";
-			$query .= "sy.SchoolYearID, CONCAT('SY ', sy.Start, '-', sy.End) AS schoolYear ";
+			$query = "SELECT DISTINCT ";
+			$query .= "sem.SemesterId, sem.Description AS `semester` ";
 			$query .= "FROM `grd-grades` gg ";
 			$query .= "LEFT JOIN `enl-student_enlistment` enl ON enl.EnlistmentID=gg.enlistedSubject ";
 			$query .= "LEFT JOIN `enl-subject_schedule` ss ON ss.SectionSubject=enl.SectionSubject ";
@@ -424,7 +416,7 @@
 			$query .= "LEFT JOIN `sch-semesters` sem ON sem.SemesterId=enl.Semester ";
 			$query .= "WHERE enl.StudentID={$studentId} ";
 			$query .= "GROUP BY gradeId ";
-			$query .= "ORDER BY schoolYear, semester, s.Code ";
+			$query .= "ORDER BY semester ";
 			$result = $conn->query($query);
 
 			if($result){

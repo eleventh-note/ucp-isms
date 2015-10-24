@@ -202,12 +202,6 @@
 					$valid = false;
 				}
 
-				if((float)$finalGrade <= 3.00){
-					$remarks = "PASSED";
-				} elseif($finalGrade > 3.00){
-					$remarks = "FAILED";
-				}
-
 				switch($finalGrade){
 					case 'INC':
 						$valid = false;
@@ -219,12 +213,18 @@
 						break;
 				}
 
+				if((float)$finalGrade <= 3.00){
+					$remarks = "PASSED";
+				} elseif($finalGrade > 3.00){
+					$remarks = "FAILED";
+				}
+
 				if($midtermGrade == "" && $preFinalGrade == ""){
 					$valid = false;
 					$remarks = "";
 				}
 
-				if ($midtermGrade == '5.00' || $preFinalGrade == '5.00') {
+				if ($preFinalGrade == '5.00') {
 					$remarks = "FAILED";
 				}
 
@@ -245,6 +245,7 @@
 					$valid = false;
 					$remarks = "UNOFFICIALLY DROPPED";
 				}
+
 
 				//$data[] = array($ctr, $grade['subjectCode'], $grade['subjectDescription'], $midtermGrade, $preFinalGrade, $finalGrade, $remarks);
 				$data[] = array($ctr, $grade['subjectCode'], $grade['subjectDescription'], $midtermGrade, $preFinalGrade, $remarks);

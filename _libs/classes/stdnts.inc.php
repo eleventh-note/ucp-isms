@@ -1313,6 +1313,44 @@
 		}
 
 		//Will always return null for errors else an array
+		function GetSprById($studentId){
+			$records = null;
+
+			if($this->conn == null){
+				$error = "No defined connection.";
+				return null;
+			} else {
+
+				$conn = $this->conn;
+
+				$query  = "SELECT DISTINCT CONCAT(pd.LastName, ', ', pd.FirstName, ' ', pd.MiddleName) AS `studentName`, ";
+				$query .= "pd.StudentNo ";
+				$query .= "FROM `spr-personal_data` pd ";
+				$query .= "WHERE pd.StudentID={$studentId} ";
+
+				$result = $conn->query($query);
+
+				//check for errors first
+				if($conn->error <> ""){
+					$this->error = $conn->error;
+				} else {
+					$records = array();
+					if($result->num_rows > 0){
+						while($row = $result->fetch_assoc()){
+
+							$records[] = array();
+							$records[count($records) - 1]['studentName'] = $row['studentName'];
+							$records[count($records) - 1]['StudentNo'] = $row['StudentNo'];
+
+						}
+					}
+				}
+			}
+
+			return $records;
+		}
+
+		//Will always return null for errors else an array
 		function GetSprsSortBySY(
 			$sort=0
 		){
@@ -1465,7 +1503,7 @@
 
 				// Checks whether the student have existing subjects
 
-				
+
 				if($student_number != null){
 					$query .= "AND StudentNo LIKE '%{$student_number}%' ";
 				}

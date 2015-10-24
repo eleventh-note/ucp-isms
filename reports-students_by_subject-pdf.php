@@ -102,13 +102,13 @@
 		$data[] = array('LIST OF STUDENTS');
 		$pdf->DrawTable($data, 8+4,'C',true);
 		##  COLUMNS
-		$pdf->tablewidths = array(25, 425, 100);
+		$pdf->tablewidths = array(25, 100, 325, 100);
 		$pdf->SetTextColor(0,0,0);
 		$pdf->SetFillColor(230,230,230);
 		$pdf->SetFont('Arial', 'B', '10');
 		$data = array();
 		//$data[] = array('No.', 'Subject Code', 'Subject Description', 'Midterm', 'Pre-Finals', 'Final Grade', 'Remarks');
-		$data[] = array('No.', 'Student Name', 'Course Code');
+		$data[] = array('No.', 'Student No', 'Student Name', 'Course Code');
 		$pdf->DrawGrades($data, 10+4,'C', true);
 		//##  DATA
 		$data = array();
@@ -127,7 +127,7 @@
       $student['MiddleName'] = str_replace('&Ntilde;', 'Ñ', $student['MiddleName']);
 			$student['MiddleName'] = str_replace('&ntilde;', 'ñ', $student['MiddleName']);
 
-			$data[] = array($ctr, $student['LastName'] . ', ' . $student['FirstName'] . ' ' . $student['MiddleName'], $student['CourseCode']);
+			$data[] = array($ctr, $student['StudentNo'], $student['LastName'] . ', ' . $student['FirstName'] . ' ' . $student['MiddleName'], $student['CourseCode']);
 		}
 
 

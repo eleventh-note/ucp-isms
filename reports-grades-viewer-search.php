@@ -15,8 +15,8 @@
 
 	//Set no caching
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
-	header("Cache-Control: no-store, no-cache, must-revalidate"); 
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	header("Cache-Control: no-store, no-cache, must-revalidate");
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
 
@@ -33,20 +33,20 @@
 	require_once(CLASSLIST . "cllgs.inc.php");
 	require_once(CLASSLIST . "schl.inc.php");
 //::END OF 'CONFIGURATION'
-		
+
 	//# General Variables - shown in all documents for easy modification
 		$title = SCHOOL_NAME . " Integrated School Management System";
 		$keywords = "";
 		$description = "";
 		$autdor = "";
 		$robots="noindex,nofollow";
-	
+
 	//Sentry/Security Measures must be done here
 	if(isset($_SESSION['UserInfo'])){
 		//autdenticate user privileges
 		$UserInfo = unserialize($_SESSION['UserInfo']);
 		$Sentry = new Sentry($UserInfo);
-		
+
 		$PagePrivileges = new PagePrivileges();
 		$PagePrivileges->AddPrivilege("SUPERADMIN");
 		$PagePrivileges->AddPrivilege("Grades - Administrator");
@@ -58,7 +58,7 @@
 		header("Location: index.php?error=2");
 		exit();
 	}
-	
+
 	$ISMS = new ISMSConnection(CONNECTION_TYPE);
 	$conn = $ISMS->GetConnection();
 
@@ -67,7 +67,7 @@
 	$hnd_cu = new CourseManager($conn);
 	$hnd_co = new CollegeManager($conn);
 	$hnd_sc = new SchoolManager($conn);
-	
+
 	$backgrounds = $std->GetCurrentAcademicBackgroundsByKey();
 	$courses = $hnd_cu = $hnd_cu->GetCoursesByKey();
 	$college_types = $hnd_co->GetCollegeTypesByKey();
@@ -77,19 +77,19 @@
 	$semesters = $hnd_sc->GetSemestersByKey();
 	$school_years = $hnd_sc->GetSchoolYearsByKey();
 
-	//REMOVE ALL POST 
-	if(isset($_POST['reset'])){ 
-		unset($_POST['college']); 
-		unset($_POST['course']); 
-		unset($_POST['semester']); 
-		unset($_POST['level']); 
+	//REMOVE ALL POST
+	if(isset($_POST['reset'])){
+		unset($_POST['college']);
+		unset($_POST['course']);
+		unset($_POST['semester']);
+		unset($_POST['level']);
 	}
-	
+
 	//# ERASE SESSION enlistment
 	if(isset($_SESSION['enlisted_subjects'])){
 		unset($_SESSION['enlisted_subjects']);
 	}
-	
+
 	if(isset($_POST['search'])){
 		$keyword = (string) $_POST['keyword'];
 		$student_number = (string) $_POST['student_number'];
@@ -104,7 +104,7 @@
 		$success = $_SESSION['success'];
 		unset($_SESSION['success']);
 	}
-	
+
 	$conn->Close();
 
 ?>
@@ -115,7 +115,7 @@
 //::START OF 'DEFAULT HEAD CONFIG'
 	require_once("_system/_config/head_config.php");
 //::END OF 'DEFAULT HEAD CONFIG'
-	
+
 	//# Otder CSS Loaded Here
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "home.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "verticalnav.css\" />";
@@ -124,11 +124,11 @@
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "actions.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "tables.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "tweaks.css\" />";
-	
+
 	//# Other Javascript Loaded Here
 	echo "<script type=\"text/javascript\" src=\"" . $DIR_JS_PLUGINS . "jquery.mini.js" . "\"></script>";
 	echo "<script type=\"text/javascript\" src=\"" . $DIR_JS_DEFAULT . "general.js" . "\"></script>";
-	
+
 	//Replace Timer Below witd script for javascript logout`
 	//###TIMER###
 ?>
@@ -136,26 +136,26 @@
 			function getSelectValue(target){
 				target = document.getElementById(target);
 				content = target.value;
-			
+
 				return content;
 			}
-			
+
 			function redirectTo(url, extension){
 				window.location = url + extension;
 			}
 		</script>
 	</head>
-	<body id="reports"> 
+	<body id="reports">
 		<div id="container">
 			<div id="header">
 				<?php require_once("_system/main/banner.inc.php"); ?>
-				<?php require_once("_system/main/dashboard.inc.php"); ?>	
+				<?php require_once("_system/main/dashboard.inc.php"); ?>
 			</div><?php //end of header ?>
-			
-			<div id="body">			
-				<?php 
+
+			<div id="body">
+				<?php
 					//Replace witd error_handling script below
-					//###ERROR SCRIPT### 
+					//###ERROR SCRIPT###
 				?>
 				<div class="content">
 					<div class="column" id="column-first">
@@ -182,24 +182,24 @@
 									<table class="form" cellspacing="0">
 										<tr class="info">
 											<td class="label">Student Name</td>
-											<td class="input">: 
-												<input type="text" name="keyword" class="medium_width" value="" /> 
-												
+											<td class="input">:
+												<input type="text" name="keyword" class="medium_width" value="" />
+
 											</td>
 										</tr>
 										<tr class="info">
 											<td class="label">Student Number</td>
-											<td class="input">: 
-												<input type="text" name="student_number" value="" /> 
-												
+											<td class="input">:
+												<input type="text" name="student_number" value="" />
+
 											</td>
 										</tr>
 									</table>
 									<hr class="form_top"/>
 									<table class="form" cellspacing="0">
 											<td>
-												
-												<input type="button" class="button" name="cancel" value="Go Back" onclick="window.location='grades.php'" />
+
+												<input type="button" class="button" name="cancel" value="Go Back" onclick="window.location='reports.php'" />
 												<input type="submit" class="button" name="search" value="Search" />
 												<?php //<input type="submit" class="button" name="college_save" value="Add" /> ?>
 											</td>
@@ -225,7 +225,7 @@
 											<th class="employee_status">Entry Semester</th>
 											<?php //<th class="Actions"></th> ?>
 										</thead>
-										<?php 
+										<?php
 											$ctr = 0;
 											if(sizeof($records) > 0){
 												foreach($records as $item){
@@ -260,7 +260,7 @@
 												echo "<td colspan=\"9\">There are no existing students with the said details.</td>";
 											}
 										?>
-										
+
 									</table>
 								</div>
 							<?php } ?>

@@ -312,12 +312,14 @@
 				$query .= "LEFT JOIN `spr-current_academic_background` bg ON bg.StudentNo=data.StudentNo ";
 				$query .= "LEFT JOIN `sch-course_list` cou ON cou.CourseID=bg.Course ";
 				$query .= "LEFT JOIN `sch-colleges` coll ON coll.CollegeID = cou.College ";
-				$query .= "WHERE Semester={$sem} AND SY={$sy} AND bg.CurrentAcademicBackgroundID=(SELECT CurrentAcademicBackgroundID FROM `spr-current_academic_background` bg2 WHERE bg2.StudentNo=bg.StudentNo ORDER BY CurrentAcademicBackgroundID DESC LIMIT 0,1) ";
+				$query .= "WHERE 1=1 ";
+				$query .= "AND Semester={$sem} AND SY={$sy} ";
 				if($student_id != null){
+					// Only add the filter for the academic background
+					$query .= "AND bg.CurrentAcademicBackgroundID=(SELECT CurrentAcademicBackgroundID FROM `spr-current_academic_background` bg2 WHERE bg2.StudentNo=bg.StudentNo ORDER BY CurrentAcademicBackgroundID DESC LIMIT 0,1) ";
 					$query .= "AND enl.StudentID={$student_id} ";
 				}
 				$query .= " ORDER BY enl.DateCreated ";
-
 				$result = $conn->query($query);
 
 				//check for errors first
@@ -326,6 +328,7 @@
 				} else {
 					$details = array();
 					$ctr = 0;
+
 					if($result->num_rows > 0){
 						while($row = $result->fetch_assoc()){
 

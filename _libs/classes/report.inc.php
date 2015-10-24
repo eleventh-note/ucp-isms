@@ -75,7 +75,7 @@
 				$query = "SELECT ";
 				$query .= "`SectionSubjectID`, scs.CurriculumSubjectID, ss.SubjectID, es.SectionID, ese.StudentID, es.SY, es.Semester, ";
 				$query .= "es.Name AS SectionName, ss.Code AS SubjectCode, ss.Description AS SubjectDescription, ss.Units, ss.UnitsLab, ";
-        $query .= "spd.FirstName, spd.LastName, spd.MiddleName, scl.Code AS CourseCode, scl.Description AS CourseDescription ";
+        $query .= "spd.FirstName, spd.LastName, spd.MiddleName, scl.Code AS CourseCode, scl.Description AS CourseDescription, spd.StudentNo ";
 				$query .= "FROM `enl-section_subjects` ess ";
 				$query .= "LEFT JOIN `sch-curriculum_subjects` scs ON ess.Subject = scs.CurriculumSubjectID ";
 				$query .= "LEFT JOIN `sch-subjects` ss ON scs.Subject = ss.SubjectID ";
