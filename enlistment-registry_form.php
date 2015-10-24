@@ -115,6 +115,7 @@
 		$payment_mode = (int) $_GET['type'];
 		$labFee = (float) $_GET['lab'];
 		$lecFee = (float) $_GET['lec'];
+		$nstpFee = 0;
 		$other_fees = $_GET['other_fees'];
 		$total_other_fees = 0;
 		$total_energy_fee = 0;
@@ -193,7 +194,8 @@
 			$all_units = 0;
 			$lec_units = 0;
 			$lab_units = 0;
-		  	$total_half_priced_subjects = 0;
+			$nstp_units = 0;
+		  $total_half_priced_subjects = 0;
 
 			//##FILL DATE WITH CURRENTLY ENLISTED SUBJECTS
 			$is_old = false;
@@ -213,6 +215,13 @@
 
 						if ($curriculum_subject_id == $ssub->curriculum_subject_id && $section_subject_id == $ssub->section_subject_id) {
 							$unit = $ssub->units;
+
+							// add nstp
+							if ((int) $ssub->group == 12) {
+								$nstp_units = $ssub->units;
+								$nstpFee += $ssub->units * .5 * $lecFee;
+							}
+
 							if((int) $is_half === 1) {
 								$unit *= .5;
 								$total_half_priced_subjects = $unit * $lecFee;
@@ -229,6 +238,7 @@
 			$fees['registration_fee'] = (float) $hnd_fi->GetRegistrationFee();
 			//Tuition Fee
 			$fees['tuition_fee'] = $hnd_fi->ComputeTuitionFee_Cash($lec_units, $lecFee, $lab_units, $labFee);
+
 			//Miscellaneous Fee
 			$fees['miscellaneous_fee'] = (float) $hnd_fi->GetMiscFee();
 			//Entrance Fee = Registration + Miscellaneous
@@ -442,7 +452,7 @@
 					$pdf->SetFont('Arial', 'B', '9');
 					$pdf->Cell(130,15,'Tuition Fee: Lecture',0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($lec_units * $lecFee ,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format(($lec_units * $lecFee) - $nstpFee, 2, ".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
@@ -451,8 +461,21 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($lab_units * $labFee * 3,2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+
+					if ($nstp_units > 0) {
+						$pdf->Ln();
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'                     NSTP',0,0,'L');
+
+						$pdf->SetFont('Arial', '', '9');
+						$pdf->Cell(120,15,"Php " . number_format($nstpFee,2,".",","),0,0,'R');
+						$pdf->Cell(30, 15,'');
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+					} else {
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+					}
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -537,7 +560,7 @@
 					// each loop is a line
 					$fee_total_displayed_toggle = false;
 					while (
-						count($other_fees) > 0 
+						count($other_fees) > 0
 						|| !$fee_total_displayed
 						|| count($discount_details) > 0
 					) {
@@ -592,7 +615,7 @@
 					}
 					$total_less_all -= $computed_scholarship_discount;
 					$total_discount = $fixed_discount + $computed_scholarship_discount;
-					
+
 					$pdf->SetFont('Arial', 'B', '10');
 					$pdf->Cell(250,15,'CASH BASIS:',1,0,'C');
 					$pdf->Ln();
@@ -611,7 +634,7 @@
 					$pdf->SetFont('Arial', 'B', '9');
 					$pdf->Cell(130,15,'Tuition Fee: Lecture',0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($lec_units * $lecFee ,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format(($lec_units * $lecFee) - $nstpFee, 2,".",","),0,0,'R');
 					$pdf->Ln();
 
 					$pdf->SetFont('Arial', 'B', '9');
@@ -620,8 +643,21 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(120,15,"Php " . number_format($lab_units * $labFee * 3,2,".",","),0,0,'R');
 					$pdf->Cell(30, 15,'');
-					$pdf->SetFont('Arial', 'B', '9');
-					$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+
+					if ($nstp_units > 0) {
+						$pdf->Ln();
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'                     NSTP',0,0,'L');
+
+						$pdf->SetFont('Arial', '', '9');
+						$pdf->Cell(120,15,"Php " . number_format($nstpFee,2,".",","),0,0,'R');
+						$pdf->Cell(30, 15,'');
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+					} else {
+						$pdf->SetFont('Arial', 'B', '9');
+						$pdf->Cell(130,15,'PAYMENT:',0,0,'L');
+					}
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -706,7 +742,7 @@
 					// each loop is a line
 					$fee_total_displayed_toggle = false;
 					while (
-						count($other_fees) > 0 
+						count($other_fees) > 0
 						|| !$fee_total_displayed
 						|| count($discount_details) > 0
 					) {
