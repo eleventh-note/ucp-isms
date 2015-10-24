@@ -531,7 +531,7 @@
 						$pdf->SetFont('Arial', 'B', '9');
 						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
 						$pdf->SetFont('Arial', '', '9');
-						$pdf->Ln();
+						//$pdf->Ln();
 					}
 
 					$scholarship_displayed = !(isset($scholarship));
@@ -713,7 +713,7 @@
 						$pdf->SetFont('Arial', 'B', '9');
 						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
 						$pdf->SetFont('Arial', '', '9');
-						$pdf->Ln();
+						//$pdf->Ln();
 					}
 
 					$scholarship_displayed = !(isset($scholarship));
