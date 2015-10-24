@@ -116,6 +116,68 @@
 
 			return $records;
 		} // End of GetStudentsFromSectionSubject($section_id)
+
+		function GetStudentCountPerSubject($sort = 1, $sem = null, $sy = null) {
+			$records = null;
+
+			if($this->conn == null){
+				$error = "No defined connection.";
+				return null;
+			} else {
+
+				$conn = $this->conn;
+
+				$query = "SELECT ";
+				$query .= "ss.Code AS SubjectCode, ss.Description AS SubjectDescription, ";
+				$query .= "es.Name AS Section, COUNT(*) AS NoStudents ";
+				$query .= "FROM `enl-section_subjects` ess ";
+				$query .= "LEFT JOIN `sch-curriculum_subjects` scs ON scs.CurriculumSubjectID = ess.Subject ";
+				$query .= "LEFT JOIN `sch-subjects` ss ON ss.SubjectID = scs.Subject ";
+				$query .= "LEFT JOIN `enl-sections` es ON es.SectionID = ess.Section ";
+        $query .= "LEFT JOIN `enl-student_enlistment` ese ON ese.SectionSubject = ess.SectionSubjectID ";
+        $query .= "WHERE 1=1 ";
+
+        if ($sy != null) {
+        	$query .= "AND es.SY = " . $sy . " ";
+        }
+
+				if ($sem != null) {
+        	$query .= "AND es.Semester = " . $sem . " ";
+        }
+
+        $query .= "GROUP BY SubjectCode, SubjectDescription, Section ";
+        $query .= "HAVING SubjectCode IS NOT NULL AND SubjectDescription IS NOT NULL ";
+
+        switch($sort) {
+        	case 1:
+        		$query .= "ORDER BY SubjectCode, Section ";
+        		break;
+        	case 2:
+        		$query .= "ORDER BY SubjectDescription, Section ";
+        		break;
+        	case 3:
+        		$query .= "ORDER BY Section, SubjectCode ";
+        		break;
+        }
+
+				$result = $conn->query($query);
+
+				echo $conn->error;
+				//check for errors first
+				if($conn->error <> ""){
+					$this->error = $conn->error;
+				} else {
+					$records = array();
+					if($result->num_rows > 0){
+						while($row = $result->fetch_assoc()){
+							$records[] = $row;
+						}
+					}
+				}
+			}
+
+			return $records;
+		}
 	}
 
 ?>
