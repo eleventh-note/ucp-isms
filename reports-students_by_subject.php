@@ -143,6 +143,14 @@
 							</h1>
 
 							<p class=""><b></b></p>
+							<p>
+								Sort report by:
+								<select id="sort">
+									<option value="1">Student No</option>
+									<option value="2">Student Name</option>
+								</select>
+								then click on a row to open a report.
+							</p>
 							<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 								<div class="table_form">
 
@@ -184,9 +192,9 @@
 
                         //define the odd even tables
                         if($ctr % 2 == 0){
-                          echo "<tr class=\"even\" title=\"Edit/View schedule for [{$item['SubjectCode']}]\" onclick=\"window.location='reports-students_by_subject-pdf.php?id={$item['SectionSubjectID']}';\">";
+                          echo "<tr class=\"even\" title=\"Edit/View schedule for [{$item['SubjectCode']}]\" data-id=\"{$item['SectionSubjectID']}\">";
                         } else {
-                          echo "<tr class=\"odd\" title=\"Edit/View schedule for [{$item['SubjectCode']}]\" onclick=\"window.location='reports-students_by_subject-pdf.php?id={$item['SectionSubjectID']}';\">";
+                          echo "<tr class=\"odd\" title=\"Edit/View schedule for [{$item['SubjectCode']}]\" data-id=\"{$item['SectionSubjectID']}\">";
                         }
 
                         echo "<td>{$ctr}</td>";
@@ -215,6 +223,18 @@
 				<?php require_once("_system/main/footer.inc.php"); ?>
 			</div><?php //end of footer ?>
 		</div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('tr').each(function(i, target) {
+					var id = $(target).attr('data-id');
+					$(target).bind('click', function() {
+						var sort = $('#sort').val();
+						var link = "reports-students_by_subject-pdf.php?id=" + id + "&sort=" + sort;
+						window.open(link);
+					});
+				});
+			});
+		</script>
 	</body>
 </html>
 <?php

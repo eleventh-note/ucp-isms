@@ -78,7 +78,8 @@
 		$school_year = $school_years[0];
 
 		$id = (int) $_GET['id'];
-		$students = $hnd_r->GetStudentsFromSectionSubject($id);
+		$sort = isset($_GET['sort']) ? (int) $_GET['sort'] : 1;
+		$students = $hnd_r->GetStudentsFromSectionSubject($id, $sort);
 
 		//#CREATE PDF
 		$pdf = new PDF('P','pt','Letter');

@@ -62,7 +62,7 @@
 		} // End of GetActiveSubjects()
 
     // Get List of Students based on a selected Section Subjects on current Semester and School Year
-		function GetStudentsFromSectionSubject($section_id){
+		function GetStudentsFromSectionSubject($section_id, $sort = 1){
 			$records = null;
 
 			if($this->conn == null){
@@ -88,7 +88,15 @@
 				$query .= "1 AND es.SY = (SELECT SchoolYearID FROM `sch-school_years` WHERE Active=1) ";
 				$query .= "AND es.Semester = (SELECT SemesterID FROM `sch-semesters` WHERE Active=1) ";
         $query .= "AND SectionSubject={$section_id} ";
-				$query .= "ORDER BY spd.LastName ";
+
+        switch($sort) {
+        	case 1:
+        		$query .= "ORDER BY spd.StudentNo ";
+        		break;
+        	case 2:
+        		$query .= "ORDER BY spd.LastName, spd.FirstName ";
+        		break;
+        }
 
 				$result = $conn->query($query);
 
