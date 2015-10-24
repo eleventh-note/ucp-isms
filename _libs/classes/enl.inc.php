@@ -796,7 +796,9 @@
 				$conn = $this->conn;
 
 				$query  = "SELECT DISTINCT ";
-				$query .= "es.SectionId, es.Name AS Section, scl.Code AS CourseCode, scl.Description AS CourseDescription, CONCAT(spd.LastName, ', ', spd.FirstName, ' ', spd.MiddleName) AS StudentName ";
+				$query .= "es.SectionId, es.Name AS Section, scl.Code AS CourseCode, ";
+				$query .= "scl.Description AS CourseDescription, CONCAT(spd.LastName, ', ', spd.FirstName, ' ', spd.MiddleName) AS StudentName, ";
+				$query .= "spd.StudentNo ";
 				$query .= "FROM `enl-sections` es ";
 				$query .= "LEFT JOIN `enl-section_subjects` ess ON ess.Section = es.SectionId ";
 				$query .= "LEFT JOIN `sch-curriculum_subjects` scs ON scs.CurriculumSubjectId = ess.Subject ";
