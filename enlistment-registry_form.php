@@ -747,7 +747,7 @@
 						|| !$fee_total_displayed
 						|| count($discount_details) > 0
 					) {
-
+						$first_column_is_printed = false;
 						$fee = array_shift($other_fees);
 
 						if (isset($fee)) {
@@ -776,7 +776,7 @@
 						$disc = array_shift($discount_details);
 						if (isset($disc)) {
 							$split = explode("#####", $disc);
-							$space = (!$fee_total_displayed) ? 30 : 280;
+							$space = 280;
 							$space = strpos($disc, "TOTAL DISCOUNT" !== false) ? 280 : $space;
 							$space = $first_column_is_printed ? 30 : $space;
 							$pdf->Cell($space, 15, '', 0, 0, '');
