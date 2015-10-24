@@ -527,11 +527,11 @@
 
 					$pdf->Ln();
 
-					if(count($other_fees) > 0) {
+					if(count($other_fees) > 0 && $total_laboratory_fee > 0) {
 						$pdf->SetFont('Arial', 'B', '9');
 						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
 						$pdf->SetFont('Arial', '', '9');
-						//$pdf->Ln();
+						$pdf->Ln();
 					}
 
 					$scholarship_displayed = !(isset($scholarship));
@@ -709,11 +709,11 @@
 					$pdf->Ln();
 
 
-					if(count($other_fees) > 0) {
+					if(count($other_fees) > 0 && $total_laboratory_fee > 0) {
 						$pdf->SetFont('Arial', 'B', '9');
 						$pdf->Cell(250,15,'Laboratory Fee',0,0,'L');
 						$pdf->SetFont('Arial', '', '9');
-						//$pdf->Ln();
+						$pdf->Ln();
 					}
 
 					$scholarship_displayed = !(isset($scholarship));
@@ -741,6 +741,7 @@
 
 					// each loop is a line
 					$fee_total_displayed_toggle = false;
+					$first_column_is_printed = false;
 					while (
 						count($other_fees) > 0
 						|| !$fee_total_displayed
@@ -759,6 +760,7 @@
 								$pdf->Cell(130,15, '  - ' . $feeDetails->description,0,0,'L');
 								$pdf->SetFont('Arial', '', '9');
 								$pdf->Cell(120,15,"Php " . number_format($feeDetails->price,2,".",","),0,0,'R');
+								$first_column_is_printed = true;
 							}
 						} else {
 							if(!$fee_total_displayed) {
@@ -767,6 +769,7 @@
 								$pdf->SetFont('Arial', 'B', '9');
 								$pdf->Cell(65,15,"Php " . number_format($total,2,".",","),'T',0,'R');
 								$fee_total_displayed_toggle = true;
+								$first_column_is_printed = true;
 							}
 						}
 
@@ -774,6 +777,8 @@
 						if (isset($disc)) {
 							$split = explode("#####", $disc);
 							$space = (!$fee_total_displayed) ? 30 : 280;
+							$space = strpos($disc, "TOTAL DISCOUNT" !== false) ? 280 : $space;
+							$space = $first_column_is_printed ? 30 : $space;
 							$pdf->Cell($space, 15, '', 0, 0, '');
 							$pdf->SetFont('Arial', $split[2], '9');
 							$pdf->Cell(185, 15, $split[0], 0, 0, 'L');
