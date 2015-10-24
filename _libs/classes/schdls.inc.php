@@ -46,6 +46,8 @@
 		public $unitsLab;
 		public $isHalf;
 		public $code;
+		public $group;
+
 		function __construct(
 			$section_subject_id, $section, $subject, $date_created, $modified
 		){
@@ -658,11 +660,12 @@
 				$hnd = new SubjectManager($conn);
 
 				$query = "SELECT `SectionSubjectID`, `Section`, ess.`Subject` AS CurriculumSubjectID, ss.`SubjectID` AS Subject, ";
-				$query .= "ess.`DateCreated`, ess.`Modified`, ss.IsHalfFee ";
+				$query .= "ess.`DateCreated`, ess.`Modified`, ss.IsHalfFee, ss.Group ";
 				$query .= "FROM `enl-section_subjects` ess ";
 				$query .= "LEFT JOIN `sch-curriculum_subjects` scs ON scs.CurriculumSubjectID=ess.Subject "; //Curriculum Subjects
 				$query .= "LEFT JOIN `sch-subjects` ss ON ss.SubjectID=scs.Subject "; //Subjects
 				$query .= "LEFT JOIN `enl-sections` es ON es.SectionID=ess.Section ";
+				$query .= "LEFT JOIN `sch-subject_group` ssg ON ssg.SubjectGroupID=ss.Group ";
 				$query .= "WHERE 1=1 ";
 				$query .= "AND (SELECT COUNT(*) FROM `enl-subject_schedule` WHERE SectionSubject=ess.SectionSubjectID) > 0 ";
 
@@ -715,6 +718,7 @@
 							$subjects[$row['SectionSubjectID']]->units = $subject[0]->units;
 							$subjects[$row['SectionSubjectID']]->unitsLab = $subject[0]->unitsLab;
 							$subjects[$row['SectionSubjectID']]->isHalf = $row['IsHalfFee'];
+							$subjects[$row['SectionSubjectID']]->group = $row['Group'];
 							$ctr++;
 						}
 					}
