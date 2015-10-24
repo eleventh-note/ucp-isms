@@ -76,7 +76,8 @@
 		$school_year = $school_years[0];
 
 		$id = (int) $_GET['id'];
-		$students = $hnd_enl->GetSectionStudents($id);
+		$sort = isset($_GET['sort']) ? (int) $_GET['sort'] : 1;
+		$students = $hnd_enl->GetSectionStudents($id, $sort);
 
 		// $school_year = "S.Y. " . $tmp->start . " - " . $tmp->end;
 		// $semester = $dict_semesters[$background->entry_semester]->description;

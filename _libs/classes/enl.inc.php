@@ -785,7 +785,7 @@
 		}
 
 		//Will always return null for errors else an array
-		function GetSectionStudents($section_id = null){
+		function GetSectionStudents($section_id = null, $sort = 1){
 			$students = null;
 
 			if($this->conn == null){
@@ -808,7 +808,15 @@
 				$query .= "LEFT JOIN `sch-curriculum` sc ON sc.CurriculumId = es.Curriculum ";
 				$query .= "LEFT JOIN `sch-course_list` scl ON scl.CourseId = sc.Course ";
 				$query .= "WHERE es.SectionId = {$section_id} ";
-				$query .= "ORDER BY spd.LastName, spd.FirstName ";
+
+				switch ($sort) {
+					case 1:
+						$query .= "ORDER BY spd.StudentNo ";
+						break;
+					case 2:
+						$query .= "ORDER BY spd.LastName, spd.FirstName ";
+						break;
+				}
 
 				$result = $conn->query($query);
 

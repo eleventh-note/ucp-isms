@@ -15,8 +15,8 @@
 
 	//Set no caching
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
-	header("Cache-Control: no-store, no-cache, must-revalidate"); 
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	header("Cache-Control: no-store, no-cache, must-revalidate");
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
 
@@ -34,20 +34,20 @@
 	require_once(CLASSLIST . "schdls.inc.php");
 	require_once(CLASSLIST . "schl.inc.php");
 //::END OF 'CONFIGURATION'
-			
+
 	//# General Variables - shown in all documents for easy modification
 		$title = SCHOOL_NAME . " Integrated School Management System";
 		$keywords = "";
 		$description = "";
 		$autdor = "";
 		$robots="noindex,nofollow";
-	
+
 	//Sentry/Security Measures must be done here
 	if(isset($_SESSION['UserInfo'])){
 		//autdenticate user privileges
 		$UserInfo = unserialize($_SESSION['UserInfo']);
 		$Sentry = new Sentry($UserInfo);
-		
+
 		$PagePrivileges = new PagePrivileges();
 		$PagePrivileges->AddPrivilege("SUPERADMIN");
 		$PagePrivileges->AddPrivilege("Reports - Administrator");
@@ -57,43 +57,43 @@
 		header("Location: index.php?error=2");
 		exit();
 	}
-	
+
 	$ISMS = new ISMSConnection(CONNECTION_TYPE);
 	$conn = $ISMS->GetConnection();
-	
+
 	//# HANDLERS
 	$hnd_cg = new CollegeManager($conn);
 	$hnd_co = new CourseManager($conn);
 	$hnd_sh = new ScheduleManager($conn);
 	$hnd_sc = new SchoolManager($conn);
-	
+
 	//# OPTION IS INITIALLY SHOWN
 	$sy = $hnd_sc->GetActiveSchoolYear();
 	$sem = $hnd_sc->GetActiveSemester();
-	
+
 	$colleges = $hnd_cg->GetColleges();
-	
-	//REMOVE ALL POST 
-	if(isset($_POST['reset'])){ 
-		unset($_POST['college']); 
-		unset($_POST['course']); 
-		unset($_POST['semester']); 
-		unset($_POST['level']); 
+
+	//REMOVE ALL POST
+	if(isset($_POST['reset'])){
+		unset($_POST['college']);
+		unset($_POST['course']);
+		unset($_POST['semester']);
+		unset($_POST['level']);
 	}
-	
+
 	//# ERASE SESSION on sections
 	if(isset($_SESSION['section'])){
 		unset($_SESSION['section']);
 	}
-	
+
 	//Dictionaries
 	$dict_colleges = $hnd_cg->GetCollegesByKey();
 	$dict_semesters = $hnd_sc->GetSemestersByKey();
 	$dict_levels = $hnd_co->GetYearLevelsByKey();
-	
+
 	//Get Initial Sections without filter
 	$sections = $hnd_sh->GetSectionsByKey(null, $sy[0]->year_id, $sem[0]->semester_id);
-	
+
 	if(isset($_POST['college'])){
 		$college_id = (int) $_POST['college'];
 		if($college_id > 0){
@@ -102,13 +102,13 @@
 				$college = $colleges[0];
 				$courses = $hnd_co->GetCourses($college->college_id);
 				$sections = $hnd_sh->GetSectionsByCollege($college_id, $sy[0]->year_id, $sem[0]->semester_id);
-			}			
-			
+			}
+
 		} else {
 			unset($_POST['college']);
 		}
 	}
-	
+
 	if(isset($_POST['course'])){
 		$course_id = (int) $_POST['course'];
 		if($course_id > 0){
@@ -117,12 +117,12 @@
 				$course = $courses[0];
 				$levels = $hnd_co->GetYearLevels();
 				$sections = $hnd_sh->GetSectionsByCourse($course_id, $sy[0]->year_id, $sem[0]->semester_id);
-			}			
+			}
 		} else {
 			unset($_POST['course']);
 		}
 	}
-	
+
 	// if(isset($_POST['semester'])){
 		// $semester_id = (int) $_POST['semester'];
 		// if($semester_id > 0){
@@ -130,12 +130,12 @@
 			// if(sizeof($semesters) > 0){
 				// $semester = $semesters[0];
 				// $levels = $hnd_co->GetYearLevels();
-			// }			
+			// }
 		// } else {
 			// unset($_POST['semester']);
 		// }
-	// }	
-	
+	// }
+
 	if(isset($_POST['level'])){
 		$level_id = (int) $_POST['level'];
 		if($level_id > 0){
@@ -144,23 +144,23 @@
 				$level = $levels[0];
 				$levels = $hnd_co->GetYearLevels();
 				$sections = $hnd_sh->GetSectionsByCourse($course_id, $sy[0]->year_id, $sem[0]->semester_id, $level_id);
-			}			
+			}
 		} else {
 			unset($_POST['level']);
 		}
-	}	
-	
+	}
+
 	//##### PROCESS ERROR or SUCCESS
 	if(isset($_SESSION['success'])){
 		$success = $_SESSION['success'];
 		unset($_SESSION['success']);
 	}
-	
+
 	if(isset($_SESSION['error'])){
 		$error = $_SESSION['error'];
 		unset($_SESSION['error']);
 	}
-	
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
@@ -169,7 +169,7 @@
 //::START OF 'DEFAULT HEAD CONFIG'
 	require_once("_system/_config/head_config.php");
 //::END OF 'DEFAULT HEAD CONFIG'
-	
+
 	//# Otder CSS Loaded Here
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "home.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "verticalnav.css\" />";
@@ -178,11 +178,11 @@
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "actions.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "tables.css\" />";
 	echo "<link rel=\"stylesheet\" href=\"" . $DIR_CSS_DEFAULT . "tweaks.css\" />";
-	
+
 	//# Otder Javascript Loaded Here
 	echo "<script type=\"text/javascript\" src=\"" . $DIR_JS_PLUGINS . "jquery.mini.js" . "\"></script>";
 	echo "<script type=\"text/javascript\" src=\"" . $DIR_JS_DEFAULT . "general.js" . "\"></script>";
-	
+
 	//Replace Timer Below witd script for javascript logout`
 	//###TIMER###
 ?>
@@ -191,13 +191,13 @@
 		<div id="container">
 			<div id="header">
 				<?php require_once("_system/main/banner.inc.php"); ?>
-				<?php require_once("_system/main/dashboard.inc.php"); ?>	
+				<?php require_once("_system/main/dashboard.inc.php"); ?>
 			</div><?php //end of header ?>
-			
-			<div id="body">			
-				<?php 
+
+			<div id="body">
+				<?php
 					//Replace witd error_handling script below
-					//###ERROR SCRIPT### 
+					//###ERROR SCRIPT###
 				?>
 				<div class="content">
 					<div class="column" id="column-first">
@@ -206,7 +206,7 @@
 					<div class="column" id="column-second">
 						<div class="inner">
 							<h1>
-								<span class="Highlight">List of Section</span> 
+								<span class="Highlight">List of Section</span>
 								<?php
 									//##### PASS ERROR IF FOUND
 									if(isset($success)){
@@ -217,31 +217,39 @@
 									}
 								?>
 							</h1>
-							
+
 							<p class=""><b></b></p>
+							<p>
+								Sort report by:
+								<select id="sort">
+									<option value="1">Student No</option>
+									<option value="2">Student Name</option>
+								</select>
+								then click on a row to open a report.
+							</p>
 							<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 								<div class="table_form">
-									
-							<?php 
+
+							<?php
 									echo "<a id=\"list_of_subjects\"></a>";
 									echo "<p class=\"margin-top: 20px;\">";
 									echo "</p>";
 									echo "<div class=\"table\">";
 										echo "<table class=\"curriculum_subjects default\" style=\"margin-top:10px;\" cellspacing=\"0\" title=\"\">";
 											echo "<thead><th colspan=\"10\" class=\"year_level\">ACTIVE SECTIONS of ";
-											
-												if(isset($sy)){ 
+
+												if(isset($sy)){
 													if(sizeof($sy) > 0){
-														echo "[SY " . $sy[0]->start . " - " . $sy[0]->end . "]"; 
+														echo "[SY " . $sy[0]->start . " - " . $sy[0]->end . "]";
 													}
-												} 
-												
+												}
+
 												if(isset($sem)){
 													if(sizeof($sem) > 0){
 														echo " [" . $sem[0]->description . "]";
 													}
 												}
-											
+
 											echo "</th></thead>";
 											echo "<thead>";
 												echo "<th class=\"Count\">No.</th>";
@@ -255,7 +263,7 @@
 												//echo "<th class=\"Actions\"></th>";
 											echo "</thead>";
 											$ctr = 0;
-											
+
 											foreach($sections as $item){
 												//# Get Information for processing
 												$subjects = $hnd_sh->GetSectionSubjects($item->section_id);
@@ -266,14 +274,14 @@
 													$total_units += $tmp->units;
 												}
 												$ctr++;
-												
+
 													//define the odd even tables
 													if($ctr % 2 == 0){
-														echo "<tr class=\"even\" title=\"Edit/View schedule for [{$item->name}]\" onclick=\"window.location='reports-students_per_section-pdf.php?id={$item->section_id}';\">";
+														echo "<tr class=\"even\" title=\"Edit/View schedule for [{$item->name}]\" data-id=\"{$item->section_id}\">";
 													} else {
-														echo "<tr class=\"odd\" title=\"Edit/View schedule for [{$item->name}]\" onclick=\"window.location='reports-students_per_section-pdf.php?id={$item->section_id}';\">";
+														echo "<tr class=\"odd\" title=\"Edit/View schedule for [{$item->name}]\" data-id=\"{$item->section_id}\">";
 													}
-													
+
 													echo "<td>{$ctr}</td>";
 													//Section
 													echo "<td>{$item->name}</td>";
@@ -299,12 +307,12 @@
 													echo "<td>";
 														echo $dict_semesters[$item->semester]->description;
 													echo "</td>";
-												
-											}						
+
+											}
 										echo "</table>";
 									echo "</div>";
 
-							?>									
+							?>
 									<hr class="form_top"/>
 								</div><?php //end TABLE FORM ?>
 							</form>
@@ -317,6 +325,18 @@
 				<?php require_once("_system/main/footer.inc.php"); ?>
 			</div><?php //end of footer ?>
 		</div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('tr').each(function(i, target) {
+					var id = $(target).attr('data-id');
+					$(target).bind('click', function() {
+						var sort = $('#sort').val();
+						var link = "reports-students_per_section-pdf.php?id=" + id + "&sort=" + sort;
+						window.open(link);
+					});
+				});
+			});
+		</script>
 	</body>
 </html>
 <?php
