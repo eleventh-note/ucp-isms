@@ -559,12 +559,13 @@
 
 					// each loop is a line
 					$fee_total_displayed_toggle = false;
+					$first_column_is_printed = false;
 					while (
 						count($other_fees) > 0
 						|| !$fee_total_displayed
 						|| count($discount_details) > 0
 					) {
-
+						$first_column_is_printed = false;
 						$fee = array_shift($other_fees);
 
 						if (isset($fee)) {
@@ -577,6 +578,7 @@
 								$pdf->Cell(130,15, '  - ' . $feeDetails->description,0,0,'L');
 								$pdf->SetFont('Arial', '', '9');
 								$pdf->Cell(120,15,"Php " . number_format($feeDetails->price,2,".",","),0,0,'R');
+								$first_column_is_printed = true;
 							}
 						} else {
 							if(!$fee_total_displayed) {
@@ -585,13 +587,16 @@
 								$pdf->SetFont('Arial', 'B', '9');
 								$pdf->Cell(65,15,"Php " . number_format($total,2,".",","),'T',0,'R');
 								$fee_total_displayed_toggle = true;
+								$first_column_is_printed = true;
 							}
 						}
 
 						$disc = array_shift($discount_details);
 						if (isset($disc)) {
 							$split = explode("#####", $disc);
-							$space = (!$fee_total_displayed) ? 30 : 280;
+							$space = 280;
+							$space = strpos($disc, "TOTAL DISCOUNT" !== false) ? 280 : $space;
+							$space = $first_column_is_printed ? 30 : $space;
 							$pdf->Cell($space, 15, '', 0, 0, '');
 							$pdf->SetFont('Arial', $split[2], '9');
 							$pdf->Cell(185, 15, $split[0], 0, 0, 'L');
