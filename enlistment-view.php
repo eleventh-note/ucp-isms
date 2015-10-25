@@ -637,6 +637,7 @@
 														echo $DIR_IMAGE_DEFAULT . "icons/file_pdf.png\"";
 														echo "/>";
 														echo "<input type=\"button\" name=\"cancel_enlist\" class=\"button\" value=\"Get Registry Form\" onclick=\"if(CheckStatusType('oLoadingStatus','oPaymentMode', 'tuition_fee_lec', 'tuition_fee_lab', 'other_fees')==true){ window.open('enlistment-registry_form.php?id={$id}&' + GetStatusType('oLoadingStatus','oPaymentMode','oScholarship','oDiscount','tuition_fee_lec','tuition_fee_lab', 'other_fees')); } else { alert('Please select Payment Mode, Loading Status, Tuition Fee for Lecture and Laboratory.'); }\" />";
+														echo "<input type=\"button\" name=\"cancel_enlist\" class=\"button\" value=\"Get Temp Registry Form\" onclick=\"if(CheckStatusType('oLoadingStatus','oPaymentMode', 'tuition_fee_lec', 'tuition_fee_lab', 'other_fees')==true){ window.open('enlistment-temp_registry_form.php?id={$id}&' + GetStatusType('oLoadingStatus','oPaymentMode','oScholarship','oDiscount','tuition_fee_lec','tuition_fee_lab', 'other_fees')); } else { alert('Please select Payment Mode, Loading Status, Tuition Fee for Lecture and Laboratory.'); }\" />";
 													echo "</th>";
 												echo "</thead>";
 											echo "</table>";
