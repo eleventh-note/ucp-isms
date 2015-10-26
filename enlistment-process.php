@@ -304,11 +304,11 @@
 			$sch = null;
 			$dsc = null;
 			$discount_total = 0;
+			$computed_scholarship = 0;
 
 			if($s > 0){ $sch = $dict_scholarships[$s]; }
 			if($d > 0){ $dsc = $dict_discounts[$d]; }
 
-// TODO: Change Computation and Save to database here
 			$total = 0;
 			//## CONVERT ALL TO NUMBER FORMAT
 			if($payment_mode==INSTALLMENT && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
@@ -318,8 +318,7 @@
 				if(isset($sch)){ $tpercentage += $sch->percentage; }
 				$discount_total = (isset($dsc)) ? $dsc->price : 0;
 
-				$total = $fees['registration_fee'] + $total_other_fees + $fees['miscellaneous_fee'] + ($fees['tuition_fee'] * (1-$tpercentage/100));
-				$total = $total * 1.05 - $discount_total;
+				$total = $total * 1.05 - $discount_total - ($fees['tuition_fee'] * ($tpercentage/100));
 
 			} elseif($payment_mode==CASH && ($loading_status == FULL_LOAD || $loading_status == PARTIAL_LOAD)){
 
