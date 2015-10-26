@@ -129,7 +129,7 @@
 								<p class="action"><input type="button" value="List of Students by Section" onclick="window.location='reports-students_per_section.php'" /></p>
 								<p class="action"><input type="button" value="List of Students by Subject" onclick="window.location='reports-students_by_subject.php'" /></p>
 								<p class="action"><input type="button" value="Grades Viewer" onclick="window.location='reports-grades-viewer-search.php'" /></p>
-								<p class="action"><input type="button" value="Student Count" onclick="window.location='reports-student_count_per_subject_section.php'" /></p>
+								<p class="action"><input type="button" value="Student Count by Section and Subject" onclick="window.location='reports-student_count_per_subject_section.php'" /></p>
 							</div>
 						</div>
 					</div>
