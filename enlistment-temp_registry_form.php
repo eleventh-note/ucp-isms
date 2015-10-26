@@ -422,14 +422,32 @@
 						$computed_scholarship_discount = $fees['tuition_fee'] * ($scholarship->percentage/100);
 					}
 
-					$total_less_scholarship = $total - $computed_scholarship_discount; // TOTAL FEE - SCHOLARSHIP
+					// 20151026 -- removed deduction of scholarship discount from here
+					$total_less_scholarship = $total;// - $computed_scholarship_discount; // TOTAL FEE - SCHOLARSHIP
 
 					$total_less_downpayment = ($total_less_scholarship - $downpayment); // LESS DOWNPAYMENT
 					$total_add_surcharge = $total_less_downpayment  * 1.05; // ADD SURCHARGE from INSTALLMENT
 					$partials = $total_add_surcharge / 3;
 
-					$finals_fee = $partials - $fixed_discount; // FINALS_FEE - FIXED DISCOUNT
-					$total_less_fixed_discount = round($partials, 2) * 2 + round($finals_fee, 2);
+					// Updates:
+					// - 20151026
+					//	-- deducted $total_less_scholarship to finals fee
+					$finals_fee = $partials - $fixed_discount - $computed_scholarship_discount; // FINALS_FEE - FIXED DISCOUNT
+					$midterm_fee = $partials;
+					$prelim_fee = $partials;
+
+					// do adjustment if finals/midterm/prelim is negative after discounts
+					if ($finals_fee < 0) {
+						$midterm_fee += $finals_fee;
+						$finals_fee = 0;
+					}
+					if ($midterm_fee < 0) {
+						$prelim_fee += $midterm_fee;
+						$midterm_fee = 0;
+					}
+
+					// 20151026 - used $prelim_fee and $midterm_fee instead of $partials * 2
+					$total_less_fixed_discount = round($prelim_fee, 2) + round($midterm_fee, 2) + round($finals_fee, 2);
 					$total_discount = $computed_scholarship_discount + $fixed_discount;
 
 					$pdf->SetFont('Arial', 'B', '10');
@@ -487,7 +505,7 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(130,15,"Prelim: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($partials,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format($prelim_fee,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -499,7 +517,7 @@
 					$pdf->SetFont('Arial', '', '9');
 					$pdf->Cell(130,15,"Midterm: ",0,0,'L');
 					$pdf->SetFont('Arial', '', '9');
-					$pdf->Cell(120,15,"Php " . number_format($partials,2,".",","),0,0,'R');
+					$pdf->Cell(120,15,"Php " . number_format($midterm_fee,2,".",","),0,0,'R');
 
 					$pdf->Ln();
 					$pdf->SetFont('Arial', 'B', '9');
@@ -828,12 +846,6 @@
 					}
 */
 				}
-
-			$pdf->Ln(); $pdf->Ln();
-			$pdf->SetFont('Arial', '', '8');
-			//$pdf->MultiCell(0,9+4, "           In consideration of my admission to Universal Colleges of Parañaque (UCP), I hereby comply and pledge to fully settle my accounts on the schedule stipulated by this institution which I am enrolled.");
-			$pdf->Ln();
-			//$pdf->Cell(300,16, ""); $pdf->MultiCell(170,16, "SIGNATURE OVER PRINTED NAME", 'T', "C");
 
 
 			$pdf->Output();
