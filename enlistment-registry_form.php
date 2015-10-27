@@ -630,6 +630,7 @@
 
 					$total = $fees['registration_fee'] + $total_mixed_fees + $fees['miscellaneous_fee'] + $fees['tuition_fee'];
 					$total_less_all = $total - ($fees['tuition_fee'] - $total_half_priced_subjects) * .05;
+					$cash_discount = ($fees['tuition_fee'] - $total_half_priced_subjects) * .05;
 					$computed_scholarship_discount = 0;
 
 					$fixed_discount = (isset($discount)) ? $discount->price : 0;
@@ -637,7 +638,7 @@
 						$computed_scholarship_discount = $fees['tuition_fee'] * ($scholarship->percentage/100);
 					}
 					$total_less_all -= $computed_scholarship_discount;
-					$total_discount = $fixed_discount + $computed_scholarship_discount;
+					$total_discount = $fixed_discount + $computed_scholarship_discount + $cash_discount;
 
 					$pdf->SetFont('Arial', 'B', '10');
 					$pdf->Cell(250,15,'CASH BASIS:',1,0,'C');
@@ -747,6 +748,11 @@
 					if(isset($scholarship) || isset($discount)) {
 						//array_push($discount_details, "#####");
 						array_push($discount_details, "DISCOUNTS:##########B#####");
+
+						if($cash_discount > 0) {
+							$cash_discount_string = "Cash payment discount (5%)#####" . number_format($cash_discount, 2, ".", ",") . "##########";
+							array_push($discount_details, $cash_discount_string);
+						}
 
 						if(isset($scholarship)) {
 							$discount_string = $scholarship->description . " (" . $scholarship->percentage . "%)#####" . number_format($computed_scholarship_discount, 2, ".", ",") . "##########";
