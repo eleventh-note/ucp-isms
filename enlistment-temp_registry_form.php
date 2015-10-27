@@ -252,7 +252,7 @@
 			$pdf->AliasNbPages();
 			$pdf->AddPage();
 			//#HEADER
-			$pdf->CreateHeader('TEMPORARY REGISTRATION FORM');
+			$pdf->CreateHeader('TEMPORARY REGISTRATION REGISTRATION');
 			//#COLUMN HEADER
 			$pdf->MultiCell(0,3,'');
 			$pdf->SetFont('Arial', 'B', '7');
@@ -630,6 +630,7 @@
 
 					$total = $fees['registration_fee'] + $total_mixed_fees + $fees['miscellaneous_fee'] + $fees['tuition_fee'];
 					$total_less_all = $total - ($fees['tuition_fee'] - $total_half_priced_subjects) * .05;
+					$cash_discount = ($fees['tuition_fee'] - $total_half_priced_subjects) * .05;
 					$computed_scholarship_discount = 0;
 
 					$fixed_discount = (isset($discount)) ? $discount->price : 0;
@@ -637,7 +638,7 @@
 						$computed_scholarship_discount = $fees['tuition_fee'] * ($scholarship->percentage/100);
 					}
 					$total_less_all -= $computed_scholarship_discount;
-					$total_discount = $fixed_discount + $computed_scholarship_discount;
+					$total_discount = $fixed_discount + $computed_scholarship_discount + $cash_discount;
 
 					$pdf->SetFont('Arial', 'B', '10');
 					$pdf->Cell(250,15,'CASH BASIS:',1,0,'C');
@@ -748,6 +749,11 @@
 						//array_push($discount_details, "#####");
 						array_push($discount_details, "DISCOUNTS:##########B#####");
 
+						if($cash_discount > 0) {
+							$cash_discount_string = "Cash payment discount (5%)#####" . number_format($cash_discount, 2, ".", ",") . "##########";
+							array_push($discount_details, $cash_discount_string);
+						}
+
 						if(isset($scholarship)) {
 							$discount_string = $scholarship->description . " (" . $scholarship->percentage . "%)#####" . number_format($computed_scholarship_discount, 2, ".", ",") . "##########";
 							array_push($discount_details, $discount_string);
@@ -846,6 +852,12 @@
 					}
 */
 				}
+
+			$pdf->Ln(); $pdf->Ln();
+			$pdf->SetFont('Arial', '', '8');
+			$pdf->MultiCell(0,9+4, "           In consideration of my admission to Universal Colleges of Parañaque (UCP), I hereby comply and pledge to fully settle my accounts on the schedule stipulated by this institution which I am enrolled.");
+			$pdf->Ln();
+			$pdf->Cell(300,16, ""); $pdf->MultiCell(170,16, "SIGNATURE OVER PRINTED NAME", 'T', "C");
 
 
 			$pdf->Output();
