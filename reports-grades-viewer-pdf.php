@@ -263,6 +263,10 @@
 					$remarks = "UNOFFICIALLY DROPPED";
 				}
 
+				if($preFinalGrade == "PASSED") {
+					$remarks = "PASSED";
+				}
+
 				//$data[] = array($ctr, $grade['subjectCode'], $grade['subjectDescription'], $midtermGrade, $preFinalGrade, $finalGrade, $remarks);
 				$data[] = array($ctr, $grade['subjectCode'], $grade['subjectDescription'], $midtermGrade, $preFinalGrade, $remarks);
 			}
